@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { watch, ref, onMounted, onBeforeUnmount } from 'vue'
 import { Editor } from '@tiptap/vue-3'
+import type { EditorView } from '@tiptap/pm/view'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
@@ -76,7 +77,7 @@ const editorOptions = () => ({
     attributes: {
       class: 'prose prose-invert max-w-none min-h-[300px] outline-none px-4 py-3 prose-headings:font-blueprint prose-headings:tracking-wide prose-code:font-mono',
     },
-    handleKeyDown(view, event) {
+    handleKeyDown(view: EditorView, event: KeyboardEvent) {
       if (event.key === '/') {
         const { from } = view.state.selection
         const textBefore = view.state.doc.textBetween(
@@ -100,7 +101,7 @@ const editorOptions = () => ({
       return false
     },
   },
-  onUpdate: ({ editor: ed }) => {
+  onUpdate: ({ editor: ed }: any) => {
     emit('update:modelValue', ed.getJSON() as Record<string, unknown>)
     if (showSlashMenu.value) {
       showSlashMenu.value = false

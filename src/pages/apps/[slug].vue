@@ -4,7 +4,6 @@ import { useRoute } from 'vue-router'
 import { useProjectsStore } from '@/stores/projects'
 import { useLocale } from '@/composables/useLocale'
 import type { ProductPageContent } from '@/types'
-import type { Project } from '@/types'
 
 const route = useRoute()
 const projectsStore = useProjectsStore()
