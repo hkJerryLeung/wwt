@@ -1,0 +1,270 @@
+@import "tailwindcss";
+
+/* ============================================
+   Blueprint S35 Design Tokens
+   ============================================ */
+
+@theme {
+  /* Colors – from hkwwt.com (WHAT'S THAT) Blocksy theme */
+  --color-bp-primary: #101010;
+  --color-bp-secondary: #0f0e17;
+  --color-bp-deep: #000000;
+  --color-bp-surface: #1f1f1f;
+  --color-bp-accent: #990011;
+  --color-bp-accent-bright: #c60118;
+  --color-bp-white: #ffffff;
+  --color-bp-muted: rgba(255, 255, 255, 0.5);
+  --color-bp-subtle: rgba(255, 255, 255, 0.85);
+  --color-bp-border: rgba(255, 255, 255, 0.15);
+  --color-bp-border-strong: rgba(255, 255, 255, 0.35);
+  --color-bp-grid: rgba(255, 255, 255, 0.05);
+  --color-bp-success: #90EE90;
+  --color-bp-warning: #FFD700;
+  --color-bp-error: #FF6B6B;
+
+  /* Fonts – hkwwt.com style (Blocksy default + Noto Sans TC) */
+  --font-blueprint: "Inter", "Noto Sans TC", sans-serif;
+  --font-sans: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", "Courier New", monospace;
+
+  /* Spacing base */
+  --spacing-section-sm: 3.5rem;
+  --spacing-section-md: 5.5rem;
+  --spacing-section-lg: 7rem;
+
+  /* Animation */
+  --animate-draw: draw 1.5s ease-in-out forwards;
+  --animate-fade-up: fadeUp 0.6s ease-out forwards;
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+}
+
+/* ============================================
+   Blueprint Grid Background
+   ============================================ */
+
+.bp-grid-bg {
+  background-image:
+    linear-gradient(var(--color-bp-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-bp-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.bp-grid-bg-dense {
+  background-image:
+    linear-gradient(var(--color-bp-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-bp-grid) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ============================================
+   Blueprint Line Decorations
+   ============================================ */
+
+.bp-line-top {
+  border-top: 1px solid var(--color-bp-border);
+}
+
+.bp-line-bottom {
+  border-bottom: 1px solid var(--color-bp-border);
+}
+
+.bp-dashed-top {
+  border-top: 1px dashed var(--color-bp-border-strong);
+}
+
+.bp-dashed-bottom {
+  border-bottom: 1px dashed var(--color-bp-border-strong);
+}
+
+/* 裝飾用角標不攔截點擊，讓表單與按鈕可正常操作 */
+.bp-corner-marks {
+  pointer-events: none;
+}
+
+.bp-corner-marks::before,
+.bp-corner-marks::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--color-bp-border-strong);
+}
+
+.bp-corner-marks::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.bp-corner-marks::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bp-primary);
+  color: var(--color-bp-white);
+}
+
+::selection {
+  background-color: var(--color-bp-accent);
+  color: var(--color-bp-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bp-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bp-border-strong);
+  border-radius: 3px;
+}
+
+/* ============================================
+   Blueprint Card Hover Effect
+   ============================================ */
+
+.bp-card {
+  position: relative;
+  border: 1px solid var(--color-bp-border);
+  background: var(--color-bp-surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bp-card:hover {
+  border-color: var(--color-bp-border-strong);
+  box-shadow: 0 0 20px rgba(135, 206, 235, 0.08);
+}
+
+/* ============================================
+   Blueprint Button Styles
+   ============================================ */
+
+.bp-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border: 1px solid var(--color-bp-white);
+  color: var(--color-bp-white);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.bp-btn-primary:hover {
+  background: var(--color-bp-white);
+  color: var(--color-bp-primary);
+}
+
+.bp-btn-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border: 1px solid var(--color-bp-accent);
+  color: var(--color-bp-accent);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+.bp-btn-accent:hover {
+  background: var(--color-bp-accent);
+  color: var(--color-bp-primary);
+}
+
+/* ============================================
+   Section Numbering
+   ============================================ */
+
+.bp-section-number {
+  font-family: var(--font-blueprint);
+  font-size: 0.75rem;
+  color: var(--color-bp-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ============================================
+   Typography Helpers
+   ============================================ */
+
+.bp-heading {
+  font-family: var(--font-blueprint);
+  letter-spacing: 0.02em;
+}
+
+.bp-mono {
+  font-family: var(--font-mono);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

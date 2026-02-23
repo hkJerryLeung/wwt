@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-02-23T13:40:49.750Z",
+  "technology": {
+    "language": "TypeScript",
+    "framework": "Vue"
+  },
+  "structure": {
+    "hasDocker": false,
+    "hasCompose": false,
+    "hasGit": false
+  },
+  "pixiu": {
+    "active_rules": [],
+    "installed_skills": [
+      {
+        "filename": "performance.skill.md",
+        "size": 9823,
+        "mtime": "2026-02-18T03:06:42.853Z",
+        "sha1": "a0185901e843840eca5800c01eba0793da5861d1"
+      },
+      {
+        "filename": "security.skill.md",
+        "size": 10485,
+        "mtime": "2026-02-18T03:06:42.852Z",
+        "sha1": "aef5523c26949fd22cc0b182804411e3d5d0c490"
+      },
+      {
+        "filename": "tech-stack.skill.md",
+        "size": 3313,
+        "mtime": "2026-02-18T03:06:42.854Z",
+        "sha1": "31c9ea04c1b9f533f6ce6d28e2253a96b4515acb"
+      },
+      {
+        "filename": "ui-design.skill.md",
+        "size": 6176,
+        "mtime": "2026-02-18T03:06:42.854Z",
+        "sha1": "eb255a88d6a5b92aea32d86aa5da7d74fd4d1625"
+      }
+    ],
+    "available_workflows": []
+  }
+}
