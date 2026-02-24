@@ -45,6 +45,7 @@ const form = ref({
   featured_image: '',
   status: 'draft' as 'draft' | 'published' | 'scheduled',
   is_premium: false,
+  is_recommended: false,
 })
 
 const tagsInput = ref('')
@@ -92,6 +93,7 @@ onMounted(async () => {
         featured_image: data.featured_image || '',
         status: data.status,
         is_premium: data.is_premium,
+        is_recommended: data.is_recommended ?? false,
       }
       tagsInput.value = form.value.tags.join(', ')
     }
@@ -159,6 +161,22 @@ async function handleSave(publish = false) {
   parseTags()
 
   try {
+    // If marking as recommended on publish, check for existing recommended post
+    if (publish && form.value.is_recommended && selectedMain.value) {
+      const existing = await postsStore.findRecommended(selectedMain.value)
+      if (existing && existing.id !== form.value.id) {
+        const confirmed = confirm(
+          `此分類已有推薦文章：「${existing.title_zh || existing.title_en}」\n是否覆蓋成新的推薦文章？`
+        )
+        if (!confirmed) {
+          isSaving.value = false
+          return
+        }
+        // Clear old recommended
+        await postsStore.clearRecommended(selectedMain.value)
+      }
+    }
+
     const postData = {
       ...form.value,
       status: publish ? 'published' as const : form.value.status,
@@ -369,6 +387,19 @@ async function handleImageUpload(event: Event) {
               </option>
             </select>
           </div>
+        </div>
+
+        <!-- Recommend -->
+        <div class="bp-card p-4">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input
+              v-model="form.is_recommended"
+              type="checkbox"
+              class="h-4 w-4 accent-[#FFD700]"
+            />
+            <span class="text-sm text-bp-subtle">Recommend</span>
+          </label>
+          <p class="mt-1 text-[11px] text-bp-muted">每個 Main Category 只能有一個推薦文章</p>
         </div>
 
         <!-- Premium -->

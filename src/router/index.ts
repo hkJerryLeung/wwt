@@ -78,6 +78,21 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/auth/login',
+    name: 'auth-login',
+    component: () => import('@/pages/auth/login.vue'),
+  },
+  {
+    path: '/auth/register',
+    name: 'auth-register',
+    component: () => import('@/pages/auth/register.vue'),
+  },
+  {
+    path: '/auth/callback',
+    name: 'auth-callback',
+    component: () => import('@/pages/auth/callback.vue'),
+  },
+  {
     path: '/admin/login',
     name: 'admin-login',
     component: () => import('@/pages/admin/login.vue'),
@@ -187,12 +202,26 @@ export function registerDynamicNavRoutes() {
   })
 }
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
   if (to.params.locale) {
     const locale = to.params.locale as string
     if (!['zh-TW', 'en'].includes(locale)) {
       return next({ path: `/zh-TW${to.path}` })
     }
   }
+
+  if (to.meta.requiresAuth) {
+    const { useAuthStore } = await import('@/stores/auth')
+    const authStore = useAuthStore()
+    // Wait for auth to initialize if needed
+    if (!authStore.isAuthenticated) {
+      return next({ name: 'admin-login' })
+    }
+    if (!authStore.isAdmin) {
+      return next({ path: '/' })
+    }
+  }
+
   next()
 })
+

@@ -3,6 +3,7 @@ import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/plugins/supabase'
 import { useLocale } from '@/composables/useLocale'
+import { useAutoTranslate } from '@/composables/useAutoTranslate'
 import { usePageHeading } from '@/composables/usePageHeading'
 import type { SkillMainCategory, SkillSubCategory, SkillTopic, Post } from '@/types'
 import { generateHTML } from '@tiptap/html'
@@ -16,6 +17,7 @@ import { common, createLowlight } from 'lowlight'
 const route = useRoute()
 const router = useRouter()
 const { t, localizedField, currentLocale } = useLocale()
+const { translatedContent, isTranslating, translate, isTiptapEmpty } = useAutoTranslate()
 const { title: pageTitle, subtitle: pageSubtitle } = usePageHeading('workshop')
 
 const lowlight = createLowlight(common)
@@ -79,6 +81,8 @@ onMounted(async () => {
     activeMainId.value = firstMainId
     const defaultSub = subs.value.find(s => s.main_id === firstMainId)
     if (defaultSub) activeSubId.value = defaultSub.id
+    // Auto-open recommended post for default main category
+    autoOpenRecommended(firstMainId)
   }
   
   isLoading.value = false
@@ -111,6 +115,30 @@ function selectMain(id: string) {
   }
   activePost.value = null
   expandedTopicId.value = null
+  // Auto-open recommended post for this main category
+  autoOpenRecommended(id)
+}
+
+/**
+ * Find and auto-open the recommended post for a given main category.
+ */
+function autoOpenRecommended(mainId: string) {
+  const recommended = posts.value.find(p => {
+    if (!p.is_recommended || !p.skill_topic_id) return false
+    const topic = topics.value.find(t => t.id === p.skill_topic_id)
+    if (!topic) return false
+    const sub = subs.value.find(s => s.id === topic.sub_id)
+    return sub?.main_id === mainId
+  })
+  if (recommended) {
+    activePost.value = recommended
+    expandedTopicId.value = recommended.skill_topic_id || null
+    // Also set the correct sub category
+    const topic = topics.value.find(t => t.id === recommended.skill_topic_id)
+    if (topic) {
+      activeSubId.value = topic.sub_id
+    }
+  }
 }
 
 function selectSub(id: string) {
@@ -151,11 +179,37 @@ watch(() => route.query.article, (newSlug) => {
   }
 })
 
+// Auto-translate when English content is empty
+const isAutoTranslated = computed(() => {
+  if (!activePost.value || currentLocale.value === 'zh-TW') return false
+  return isTiptapEmpty(activePost.value.content_en)
+})
+
+watch(
+  () => [activePost.value?.id, currentLocale.value],
+  () => {
+    if (activePost.value && currentLocale.value !== 'zh-TW' && isTiptapEmpty(activePost.value.content_en)) {
+      translate(activePost.value.id, activePost.value.content_zh)
+    }
+  },
+  { immediate: true }
+)
+
 const renderedContent = computed(() => {
   if (!activePost.value) return ''
-  const content = currentLocale.value === 'zh-TW'
-    ? activePost.value.content_zh
-    : activePost.value.content_en
+
+  let content: Record<string, unknown> | null = null
+  if (currentLocale.value === 'zh-TW') {
+    content = activePost.value.content_zh
+  } else if (!isTiptapEmpty(activePost.value.content_en)) {
+    content = activePost.value.content_en
+  } else if (translatedContent.value) {
+    content = translatedContent.value
+  } else {
+    // Fallback: show Chinese while translating
+    content = activePost.value.content_zh
+  }
+
   if (!content) return '<p>No content available.</p>'
   try {
     return generateHTML(content as any, extensions)
@@ -336,9 +390,18 @@ function getMainIcon(main: SkillMainCategory): string {
               />
             </div>
 
+            <!-- Auto-translate indicator -->
+            <div v-if="isTranslating" class="mb-4 flex items-center gap-2 text-xs text-bp-muted">
+              <span class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-bp-accent border-t-transparent"></span>
+              Translating…
+            </div>
+            <div v-else-if="isAutoTranslated && translatedContent" class="mb-4 text-xs text-bp-muted border border-bp-border/50 inline-block px-2 py-0.5 rounded">
+              🌐 Auto-translated
+            </div>
+
             <!-- Content -->
             <div
-              class="prose prose-invert max-w-none prose-headings:font-blueprint prose-headings:tracking-wide prose-a:text-bp-accent prose-code:font-mono prose-pre:border prose-pre:border-bp-border prose-pre:bg-bp-deep"
+              class="article-content"
               v-html="renderedContent"
             />
           </article>

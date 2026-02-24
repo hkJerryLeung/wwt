@@ -84,7 +84,7 @@ export const usePostsStore = defineStore('posts', () => {
   const POST_COLUMNS = [
     'title_zh', 'title_en', 'slug', 'content_zh', 'content_en',
     'excerpt_zh', 'excerpt_en', 'skill_topic_id', 'tags', 'featured_image',
-    'status', 'is_premium', 'published_at', 'created_at', 'updated_at',
+    'status', 'is_premium', 'is_recommended', 'published_at', 'created_at', 'updated_at',
   ] as const
 
   function sanitizePostPayload(p: Partial<Post>, forInsert: boolean) {
@@ -145,6 +145,61 @@ export const usePostsStore = defineStore('posts', () => {
     posts.value = posts.value.filter(p => p.id !== id)
   }
 
+  /**
+   * Clear is_recommended for all posts belonging to the same main category.
+   * Uses the skill hierarchy: post → skill_topic → skill_sub_category → main_id
+   */
+  async function clearRecommended(mainId: string) {
+    // Find all topics under this main category
+    const { data: subsData } = await supabase
+      .from('skill_sub_categories')
+      .select('id')
+      .eq('main_id', mainId)
+    if (!subsData || subsData.length === 0) return
+
+    const subIds = subsData.map(s => s.id)
+    const { data: topicsData } = await supabase
+      .from('skill_topics')
+      .select('id')
+      .in('sub_id', subIds)
+    if (!topicsData || topicsData.length === 0) return
+
+    const topicIds = topicsData.map(t => t.id)
+    await supabase
+      .from('posts')
+      .update({ is_recommended: false })
+      .in('skill_topic_id', topicIds)
+      .eq('is_recommended', true)
+  }
+
+  /**
+   * Find the currently recommended post in a given main category.
+   */
+  async function findRecommended(mainId: string): Promise<Post | null> {
+    const { data: subsData } = await supabase
+      .from('skill_sub_categories')
+      .select('id')
+      .eq('main_id', mainId)
+    if (!subsData || subsData.length === 0) return null
+
+    const subIds = subsData.map(s => s.id)
+    const { data: topicsData } = await supabase
+      .from('skill_topics')
+      .select('id')
+      .in('sub_id', subIds)
+    if (!topicsData || topicsData.length === 0) return null
+
+    const topicIds = topicsData.map(t => t.id)
+    const { data } = await supabase
+      .from('posts')
+      .select('*')
+      .in('skill_topic_id', topicIds)
+      .eq('is_recommended', true)
+      .limit(1)
+      .single()
+    return data ?? null
+  }
+
   return {
     posts,
     categories,
@@ -157,5 +212,7 @@ export const usePostsStore = defineStore('posts', () => {
     fetchAllPosts,
     savePost,
     deletePost,
+    clearRecommended,
+    findRecommended,
   }
 })

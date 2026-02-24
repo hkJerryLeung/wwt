@@ -12,6 +12,7 @@ export interface Post {
   featured_image: string | null
   status: 'draft' | 'published' | 'scheduled'
   is_premium: boolean
+  is_recommended: boolean
   published_at: string | null
   created_at: string
   updated_at: string

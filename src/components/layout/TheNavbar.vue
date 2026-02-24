@@ -1,21 +1,38 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useLocale } from '@/composables/useLocale'
 import { useFrontendNavStore } from '@/stores/frontendNav'
 import { useAppearanceStore } from '@/stores/appearance'
 import { useProjectsStore } from '@/stores/projects'
+import { useAuthStore } from '@/stores/auth'
 import LanguageSwitch from '@/components/common/LanguageSwitch.vue'
 import type { FrontendNavItem } from '@/stores/frontendNav'
 
 const route = useRoute()
+const router = useRouter()
 const { t, localizedPath, currentLocale } = useLocale()
 const navStore = useFrontendNavStore()
 const appearanceStore = useAppearanceStore()
 const projectsStore = useProjectsStore()
+const authStore = useAuthStore()
 const { appsWithSlug, isLoading: projectsLoading } = storeToRefs(projectsStore)
 const isMobileMenuOpen = ref(false)
+const userMenuOpen = ref(false)
+
+const userInitials = computed(() => {
+  const name = authStore.user?.user_metadata?.full_name as string | undefined
+  if (name) return name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)
+  const email = authStore.user?.email ?? ''
+  return email.slice(0, 2).toUpperCase()
+})
+
+function handleSignOut() {
+  authStore.signOut()
+  userMenuOpen.value = false
+  router.push('/')
+}
 const dropdownOpen = ref<string | null>(null)
 let dropdownLeaveTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -161,6 +178,62 @@ function closeMobileMenu() {
         <div class="flex items-center gap-3">
           <LanguageSwitch />
 
+          <!-- Logged-in: user avatar + dropdown (desktop) -->
+          <div v-if="authStore.isAuthenticated" class="relative hidden md:block">
+            <button
+              class="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-bp-border bg-bp-surface text-xs font-semibold text-bp-white transition-colors hover:border-bp-accent"
+              @click="userMenuOpen = !userMenuOpen"
+            >
+              <img
+                v-if="authStore.user?.user_metadata?.avatar_url"
+                :src="(authStore.user.user_metadata.avatar_url as string)"
+                class="h-full w-full object-cover"
+                alt="avatar"
+              />
+              <span v-else>{{ userInitials }}</span>
+            </button>
+            <Transition
+              enter-active-class="transition duration-100 ease-out"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition duration-75 ease-in"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+            >
+              <div
+                v-show="userMenuOpen"
+                class="absolute right-0 top-full z-20 mt-2 min-w-[180px] origin-top-right border border-bp-border bg-bp-deep py-1 shadow-lg"
+                @mouseleave="userMenuOpen = false"
+              >
+                <p class="truncate border-b border-bp-border px-4 py-2 text-xs text-bp-muted">
+                  {{ authStore.user?.email }}
+                </p>
+                <button
+                  class="block w-full px-4 py-2 text-left text-sm text-bp-subtle transition-colors hover:text-bp-error"
+                  @click="handleSignOut"
+                >
+                  {{ t('admin.logout') }}
+                </button>
+              </div>
+            </Transition>
+          </div>
+
+          <!-- Guest: Login + Register (desktop) -->
+          <template v-else>
+            <router-link
+              to="/auth/login"
+              class="hidden px-3 py-1.5 text-sm text-bp-subtle transition-colors hover:text-bp-white md:inline-block"
+            >
+              {{ t('auth.login') }}
+            </router-link>
+            <router-link
+              to="/auth/register"
+              class="hidden border border-bp-accent px-3 py-1.5 text-sm text-bp-accent transition-colors hover:bg-bp-accent hover:text-bp-primary md:inline-block"
+            >
+              {{ t('auth.register') }}
+            </router-link>
+          </template>
+
           <!-- Mobile menu button -->
           <button
             class="flex h-10 w-10 items-center justify-center text-bp-subtle md:hidden"
@@ -230,6 +303,35 @@ function closeMobileMenu() {
               {{ navLabel(item) }}
             </router-link>
           </template>
+
+          <!-- Mobile auth section -->
+          <div class="border-t border-bp-border pt-3 mt-1">
+            <template v-if="authStore.isAuthenticated">
+              <p class="truncate px-3 py-1 text-xs text-bp-muted">{{ authStore.user?.email }}</p>
+              <button
+                class="block w-full px-3 py-2.5 text-left text-sm text-bp-subtle transition-colors hover:text-bp-error"
+                @click="handleSignOut(); closeMobileMenu()"
+              >
+                {{ t('admin.logout') }}
+              </button>
+            </template>
+            <template v-else>
+              <router-link
+                to="/auth/login"
+                class="block px-3 py-2.5 text-sm text-bp-subtle transition-colors hover:text-bp-white"
+                @click="closeMobileMenu"
+              >
+                {{ t('auth.login') }}
+              </router-link>
+              <router-link
+                to="/auth/register"
+                class="block px-3 py-2.5 text-sm text-bp-accent transition-colors hover:text-bp-accent-bright"
+                @click="closeMobileMenu"
+              >
+                {{ t('auth.register') }}
+              </router-link>
+            </template>
+          </div>
         </div>
       </div>
     </Transition>

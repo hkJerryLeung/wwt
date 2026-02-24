@@ -193,5 +193,23 @@
     "no_results": "暫無內容",
     "no_sub_items": "無子項目",
     "error": "發生錯誤，請稍後再試"
+  },
+  "auth": {
+    "login": "登入",
+    "register": "註冊",
+    "email": "電子郵件",
+    "password": "密碼",
+    "confirmPassword": "確認密碼",
+    "signInWithGoogle": "使用 Google 登入",
+    "signUpWithGoogle": "使用 Google 註冊",
+    "noAccount": "還沒有帳號？",
+    "hasAccount": "已經有帳號？",
+    "or": "或",
+    "backToSite": "返回網站",
+    "goToLogin": "前往登入",
+    "registerSuccess": "註冊成功！請查看你的電子郵件以確認帳號。",
+    "redirecting": "正在跳轉...",
+    "passwordMismatch": "兩次密碼輸入不一致",
+    "passwordTooShort": "密碼至少需要 6 個字元"
   }
 }

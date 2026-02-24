@@ -1,4 +1,4 @@
-# WWT — AI Workshop
+# WWT
 
 AI-Powered Creative Workshop. A bilingual (Chinese/English) website for sharing AI Coding, AI video production tips, and professional filmmaking experience.
 

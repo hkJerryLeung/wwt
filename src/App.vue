@@ -12,6 +12,7 @@ const { locale } = useI18n()
 const authStore = useAuthStore()
 
 const isAdminLogin = computed(() => route.name === 'admin-login')
+const isAuth = computed(() => route.path.startsWith('/auth'))
 const isAdmin = computed(() => route.path.startsWith('/admin') && !isAdminLogin.value)
 
 function syncLocale() {
@@ -35,7 +36,7 @@ watch(() => route.params.locale, () => {
 </script>
 
 <template>
-  <template v-if="isAdminLogin">
+  <template v-if="isAdminLogin || isAuth">
     <RouterView />
   </template>
   <AdminLayout v-else-if="isAdmin">

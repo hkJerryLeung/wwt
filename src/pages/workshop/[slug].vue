@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePostsStore } from '@/stores/posts'
 import { useFrontendNavStore } from '@/stores/frontendNav'
 import { useLocale } from '@/composables/useLocale'
+import { useAutoTranslate } from '@/composables/useAutoTranslate'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -16,6 +17,7 @@ const route = useRoute()
 const postsStore = usePostsStore()
 const navStore = useFrontendNavStore()
 const { t, localizedPath, localizedField, currentLocale } = useLocale()
+const { translatedContent, isTranslating, translate, isTiptapEmpty } = useAutoTranslate()
 const workshopPath = () => navStore.getPathByKey('workshop')
 
 const lowlight = createLowlight(common)
@@ -34,11 +36,37 @@ onMounted(() => {
 
 const post = computed(() => postsStore.currentPost)
 
+// Auto-translate when English content is empty
+const isAutoTranslated = computed(() => {
+  if (!post.value || currentLocale.value === 'zh-TW') return false
+  return isTiptapEmpty(post.value.content_en)
+})
+
+watch(
+  () => [post.value?.id, currentLocale.value],
+  () => {
+    if (post.value && currentLocale.value !== 'zh-TW' && isTiptapEmpty(post.value.content_en)) {
+      translate(post.value.id, post.value.content_zh)
+    }
+  },
+  { immediate: true }
+)
+
 const renderedContent = computed(() => {
   if (!post.value) return ''
-  const content = currentLocale.value === 'zh-TW'
-    ? post.value.content_zh
-    : post.value.content_en
+
+  let content: Record<string, unknown> | null = null
+  if (currentLocale.value === 'zh-TW') {
+    content = post.value.content_zh
+  } else if (!isTiptapEmpty(post.value.content_en)) {
+    content = post.value.content_en
+  } else if (translatedContent.value) {
+    content = translatedContent.value
+  } else {
+    // Fallback: show Chinese while translating
+    content = post.value.content_zh
+  }
+
   if (!content) return '<p>No content available.</p>'
   try {
     return generateHTML(content as Parameters<typeof generateHTML>[0], extensions)
@@ -116,9 +144,18 @@ function formatDate(dateStr: string | null): string {
           />
         </div>
 
+        <!-- Auto-translate indicator -->
+        <div v-if="isTranslating" class="mb-4 flex items-center gap-2 text-xs text-bp-muted">
+          <span class="inline-block h-3 w-3 animate-spin rounded-full border-2 border-bp-accent border-t-transparent"></span>
+          Translating…
+        </div>
+        <div v-else-if="isAutoTranslated && translatedContent" class="mb-4 text-xs text-bp-muted border border-bp-border/50 inline-block px-2 py-0.5 rounded">
+          🌐 Auto-translated
+        </div>
+
         <!-- Content -->
         <div
-          class="prose prose-invert max-w-none prose-headings:font-blueprint prose-headings:tracking-wide prose-a:text-bp-accent prose-code:font-mono prose-pre:border prose-pre:border-bp-border prose-pre:bg-bp-deep"
+          class="article-content"
           v-html="renderedContent"
         />
 

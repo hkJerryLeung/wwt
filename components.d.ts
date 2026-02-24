@@ -17,6 +17,7 @@ declare module 'vue' {
     HeroSection: typeof import('./src/components/home/HeroSection.vue')['default']
     LanguageSwitch: typeof import('./src/components/common/LanguageSwitch.vue')['default']
     PostEditor: typeof import('./src/components/admin/PostEditor.vue')['default']
+    ResizableImageView: typeof import('./src/components/editor/ResizableImageView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SlashCommandMenu: typeof import('./src/components/editor/SlashCommandMenu.vue')['default']

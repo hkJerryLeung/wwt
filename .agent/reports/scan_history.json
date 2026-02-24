@@ -1,5 +1,59 @@
 [
   {
+    "timestamp": 1771943359305,
+    "issues": [],
+    "summary": {
+      "totalIssues": 0,
+      "todoCount": 0,
+      "durationMs": 12
+    }
+  },
+  {
+    "timestamp": 1771943358896,
+    "issues": [],
+    "summary": {
+      "totalIssues": 0,
+      "todoCount": 0,
+      "durationMs": 32
+    }
+  },
+  {
+    "timestamp": 1771862794166,
+    "issues": [],
+    "summary": {
+      "totalIssues": 0,
+      "todoCount": 0,
+      "durationMs": 12
+    }
+  },
+  {
+    "timestamp": 1771862793783,
+    "issues": [],
+    "summary": {
+      "totalIssues": 0,
+      "todoCount": 0,
+      "durationMs": 29
+    }
+  },
+  {
+    "timestamp": 1771860992234,
+    "issues": [],
+    "summary": {
+      "totalIssues": 0,
+      "todoCount": 0,
+      "durationMs": 20
+    }
+  },
+  {
+    "timestamp": 1771860992210,
+    "issues": [],
+    "summary": {
+      "totalIssues": 0,
+      "todoCount": 0,
+      "durationMs": 61
+    }
+  },
+  {
     "timestamp": 1771854051873,
     "issues": [],
     "summary": {

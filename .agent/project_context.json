@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-23T13:40:49.750Z",
+  "generatedAt": "2026-02-24T14:29:17.132Z",
   "technology": {
     "language": "TypeScript",
     "framework": "Vue"
@@ -7,11 +7,17 @@
   "structure": {
     "hasDocker": false,
     "hasCompose": false,
-    "hasGit": false
+    "hasGit": true
   },
   "pixiu": {
     "active_rules": [],
     "installed_skills": [
+      {
+        "filename": "api-design.skill.md",
+        "size": 3806,
+        "mtime": "2026-02-23T15:59:32.346Z",
+        "sha1": "3fcde7c0b176d4979e81314b9120f5aa8abc3d7f"
+      },
       {
         "filename": "performance.skill.md",
         "size": 9823,
@@ -35,6 +41,12 @@
         "size": 6176,
         "mtime": "2026-02-18T03:06:42.854Z",
         "sha1": "eb255a88d6a5b92aea32d86aa5da7d74fd4d1625"
+      },
+      {
+        "filename": "wwt-project-context.skill.md",
+        "size": 9369,
+        "mtime": "2026-02-23T15:25:20.107Z",
+        "sha1": "22251600768b6f0379f3a483c5de5f44178f99b4"
       }
     ],
     "available_workflows": []

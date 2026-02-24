@@ -361,8 +361,9 @@ async function handlePostSaved(savedId: string) {
             :class="activePostId === post.id ? 'border-bp-accent bg-bp-surface' : 'border-transparent hover:border-bp-border bg-bp-primary/50'"
           >
             <div class="text-sm font-medium text-bp-white line-clamp-1">{{ post.title_zh || post.title_en || 'Untitled' }}</div>
-            <div class="text-xs text-bp-subtle mt-1 flex justify-between">
+            <div class="text-xs text-bp-subtle mt-1 flex items-center gap-2">
               <span class="text-bp-accent">{{ post.status }}</span>
+              <span v-if="post.is_recommended" class="text-[10px] text-[#FFD700] px-1 border border-[#FFD700]/50 rounded-sm">Recommend</span>
               <span v-if="post.is_premium" class="text-[10px] text-bp-warning px-1 border border-bp-warning/50 rounded-sm">Premium</span>
             </div>
           </div>
