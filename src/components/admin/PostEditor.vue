@@ -4,6 +4,7 @@ import { usePostsStore } from '@/stores/posts'
 import { useI18n } from 'vue-i18n'
 import TiptapEditor from '@/components/editor/TiptapEditor.vue'
 import { supabase } from '@/plugins/supabase'
+import { slugify } from '@/composables/slugify'
 import type { SkillMainCategory, SkillSubCategory, SkillTopic } from '@/types'
 
 const props = defineProps<{
@@ -122,32 +123,17 @@ function handleSubChange() {
   form.value.skill_topic_id = null
 }
 
-function generateSlug(title: string): string {
-  if (!title) return `post-${Date.now()}`
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-')
-    .replace(/^-|-$/g, '')
-    || `post-${Date.now()}`
-}
-
-watch(() => form.value.title_en, (newVal) => {
-  if (isNew.value && newVal && !form.value.slug) {
-    form.value.slug = generateSlug(newVal)
-  }
-})
-
-watch(() => form.value.title_zh, (newVal) => {
-  if (isNew.value && newVal && !form.value.slug && !form.value.title_en) {
-    form.value.slug = generateSlug(newVal)
-  }
-})
-
-function updateSlug() {
-  if (isNew.value && !form.value.slug) {
-    form.value.slug = generateSlug(form.value.title_en || form.value.title_zh)
-  }
-}
+// Auto-generate slug from title for new posts (continuously tracks title)
+watch(
+  () => [form.value.title_en, form.value.title_zh],
+  ([en, zh]) => {
+    if (isNew.value) {
+      const base = slugify((en as string) || (zh as string))
+      form.value.slug = base || `post-${Date.now()}`
+    }
+  },
+  { deep: true }
+)
 
 function parseTags() {
   form.value.tags = tagsInput.value
@@ -181,7 +167,7 @@ async function handleSave(publish = false) {
       ...form.value,
       status: publish ? 'published' as const : form.value.status,
       published_at: publish ? new Date().toISOString() : undefined,
-      slug: form.value.slug || generateSlug(form.value.title_en || form.value.title_zh),
+      slug: form.value.slug || slugify(form.value.title_en || form.value.title_zh) || `post-${Date.now()}`,
     }
 
     if (!isNew.value && form.value.id) {
@@ -277,7 +263,6 @@ async function handleImageUpload(event: Event) {
               v-model="form.title_zh"
               class="w-full border border-bp-border bg-bp-primary px-4 py-2.5 text-sm text-bp-white placeholder-bp-muted outline-none transition-colors focus:border-bp-accent"
               placeholder="中文標題"
-              @blur="updateSlug"
             />
           </div>
           <div>
@@ -288,7 +273,6 @@ async function handleImageUpload(event: Event) {
               v-model="form.title_en"
               class="w-full border border-bp-border bg-bp-primary px-4 py-2.5 text-sm text-bp-white placeholder-bp-muted outline-none transition-colors focus:border-bp-accent"
               placeholder="English Title"
-              @blur="updateSlug"
             />
           </div>
         </div>
@@ -297,10 +281,12 @@ async function handleImageUpload(event: Event) {
         <div>
           <label class="mb-1.5 block text-xs uppercase tracking-wider text-bp-muted">Slug</label>
           <input
-            v-model="form.slug"
-            class="w-full border border-bp-border bg-bp-primary px-4 py-2.5 font-mono text-sm text-bp-accent placeholder-bp-muted outline-none transition-colors focus:border-bp-accent"
-            placeholder="post-slug"
+            :value="form.slug"
+            readonly
+            class="w-full border border-bp-border bg-bp-surface px-4 py-2.5 font-mono text-sm text-bp-accent placeholder-bp-muted outline-none cursor-not-allowed"
+            placeholder="由標題自動生成"
           />
+          <p class="mt-1 text-[10px] text-bp-muted">由標題自動生成</p>
         </div>
 
         <!-- Chinese content editor -->

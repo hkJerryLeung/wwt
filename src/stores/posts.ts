@@ -10,21 +10,15 @@ export const usePostsStore = defineStore('posts', () => {
   const isLoading = ref(false)
   const hasError = ref(false)
 
-  async function fetchPosts(categorySlug?: string) {
+  async function fetchPosts() {
     isLoading.value = true
     hasError.value = false
     try {
-      let query = supabase
+      const query = supabase
         .from('posts')
         .select('*, skill_topics(*, skill_sub_categories(*, skill_main_categories(*)))')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
-
-      if (categorySlug) {
-        // We'll need to figure out how to filter this based on slug
-        // For now, if filtering by main category slug, we'd need an inner join or a View. 
-        // As a temporary measure, we will leave the slug filter out, or filter client-side.
-      }
 
       const { data, error } = await query
       if (error) throw error

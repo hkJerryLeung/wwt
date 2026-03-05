@@ -1,0 +1,23 @@
+version: 1
+workflows:
+  - id: deploy
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/workflows
+    spec: deploy.md
+  - id: index-refresh
+    version: 0.1.0
+    risk: low
+    source: embedded
+    base_root: <embedded>
+    base_path: ''
+    spec: <embedded>
+  - id: testing
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/workflows
+    spec: testing.md

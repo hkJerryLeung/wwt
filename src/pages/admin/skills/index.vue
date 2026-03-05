@@ -4,6 +4,7 @@ import { supabase } from '@/plugins/supabase'
 import type { SkillMainCategory, SkillSubCategory, SkillTopic, Post } from '@/types'
 import { useI18n } from 'vue-i18n'
 import PostEditor from '@/components/admin/PostEditor.vue'
+import { slugify } from '@/composables/slugify'
 
 const { t } = useI18n()
 
@@ -89,13 +90,7 @@ function closeEditor() {
   isEditing.value = false
 }
 
-function slugify(text: string): string {
-  if (!text?.trim()) return ''
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, '-')
-    .replace(/(^-|-$)+/g, '')
-}
+
 
 // Auto-generate slug for new items based on title_en or title_zh
 watch(() => [form.value.title_en, form.value.title_zh], ([en, zh]) => {

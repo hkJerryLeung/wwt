@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* v-cloak: 隱藏 Vue 尚未掛載的區塊，防止閃爍 */
+[v-cloak] {
+  display: none !important;
+}
+
 /* ============================================
    Blueprint S35 Design Tokens
    ============================================ */
@@ -22,9 +27,9 @@
   --color-bp-warning: #FFD700;
   --color-bp-error: #FF6B6B;
 
-  /* Fonts – hkwwt.com style (Blocksy default + Noto Sans TC) */
-  --font-blueprint: "Inter", "Noto Sans TC", sans-serif;
-  --font-sans: "Inter", "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Fonts – Inter (Google) + PingFang HK (system) */
+  --font-blueprint: "Inter", "PingFang HK", sans-serif;
+  --font-sans: "Inter", "PingFang HK", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", "Courier New", monospace;
 
   /* Spacing base */
@@ -36,6 +41,23 @@
   --animate-draw: draw 1.5s ease-in-out forwards;
   --animate-fade-up: fadeUp 0.6s ease-out forwards;
   --animate-fade-in: fadeIn 0.4s ease-out forwards;
+}
+
+/* ============================================
+   Global Content Width
+   ============================================ */
+
+:root {
+  --content-max-width: 1800px;
+}
+
+/* Utility: standard content container (1800px) */
+.bp-container {
+  max-width: var(--content-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 /* ============================================
@@ -146,10 +168,14 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-y: scroll;
+  overscroll-behavior: none;
 }
 
 body {
   font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
   background-color: var(--color-bp-primary);
   color: var(--color-bp-white);
 }
@@ -197,11 +223,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.5rem;
+  padding: 0.75rem 1.75rem;
   border: 1px solid var(--color-bp-white);
   color: var(--color-bp-white);
   font-family: var(--font-sans);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   transition: all 0.2s ease;
@@ -218,11 +244,11 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.5rem;
+  padding: 0.75rem 1.75rem;
   border: 1px solid var(--color-bp-accent);
   color: var(--color-bp-accent);
   font-family: var(--font-sans);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   transition: all 0.2s ease;
@@ -241,7 +267,7 @@ body {
 
 .bp-section-number {
   font-family: var(--font-blueprint);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   color: var(--color-bp-muted);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -441,4 +467,17 @@ body {
 .article-content del {
   text-decoration: line-through;
   opacity: 0.6;
+}
+
+/* ============================================
+   Scroll Reveal (GSAP handles animation)
+   ============================================ */
+
+/* Prevent flash of content before GSAP initializes */
+.scroll-reveal {
+  will-change: transform, opacity;
+}
+
+.scroll-reveal-child {
+  will-change: transform, opacity;
 }

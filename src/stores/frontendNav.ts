@@ -63,7 +63,7 @@ function mergeParsedItems(parsed: unknown): FrontendNavItem[] {
         customSubtitleEn: item.customSubtitleEn as string | undefined,
         subtitleKey: item.subtitleKey as string | undefined,
         isParentMenu: Boolean(item.isParentMenu),
-        order: Number(item.order) ?? 0,
+        order: Number(item.order) || 0,
         hidden: Boolean(item.hidden),
       }
     byId.set(merged.id, merged)
@@ -95,7 +95,17 @@ async function saveToSupabase(items: FrontendNavItem[]) {
 
 export const useFrontendNavStore = defineStore('frontendNav', () => {
   const isLoaded = ref(false)
-  const items = ref<FrontendNavItem[]>([])
+  // ── 同步從 localStorage 還原最後儲存值（防止導航列 FOUC）──
+  const items = ref<FrontendNavItem[]>((() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        return mergeParsedItems(parsed)
+      }
+    } catch { }
+    return defaultItems.map(i => ({ ...i }))
+  })())
 
   const visibleItems = computed(() =>
     items.value.filter((i) => !i.hidden).sort((a, b) => a.order - b.order)

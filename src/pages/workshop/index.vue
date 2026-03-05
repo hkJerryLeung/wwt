@@ -4,15 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { supabase } from '@/plugins/supabase'
 import { useLocale } from '@/composables/useLocale'
 import { useAutoTranslate } from '@/composables/useAutoTranslate'
+import ArticleActions from '@/components/common/ArticleActions.vue'
 import { usePageHeading } from '@/composables/usePageHeading'
 import type { SkillMainCategory, SkillSubCategory, SkillTopic, Post } from '@/types'
-import { generateHTML } from '@tiptap/html'
-import StarterKit from '@tiptap/starter-kit'
-import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import Youtube from '@tiptap/extension-youtube'
-import { common, createLowlight } from 'lowlight'
 
 const route = useRoute()
 const router = useRouter()
@@ -20,14 +14,34 @@ const { t, localizedField, currentLocale } = useLocale()
 const { translatedContent, isTranslating, translate, isTiptapEmpty } = useAutoTranslate()
 const { title: pageTitle, subtitle: pageSubtitle } = usePageHeading('workshop')
 
-const lowlight = createLowlight(common)
-const extensions = [
-  StarterKit.configure({ codeBlock: false, link: false }),
-  Image,
-  Link.configure({ openOnClick: true }),
-  CodeBlockLowlight.configure({ lowlight }),
-  Youtube,
-]
+// ── Lazy-loaded tiptap extensions (only loaded when rendering a post) ──
+let _extensions: any[] | null = null
+let _generateHTML: typeof import('@tiptap/html').generateHTML | null = null
+async function getTiptap() {
+  if (_extensions && _generateHTML) return { extensions: _extensions, generateHTML: _generateHTML }
+  const [tiptapHtml, starterKit, image, link, codeBlockLowlight, youtube, lowlightMod] = await Promise.all([
+    import('@tiptap/html'),
+    import('@tiptap/starter-kit'),
+    import('@tiptap/extension-image'),
+    import('@tiptap/extension-link'),
+    import('@tiptap/extension-code-block-lowlight'),
+    import('@tiptap/extension-youtube'),
+    import('lowlight'),
+  ])
+  const lowlight = lowlightMod.createLowlight(lowlightMod.common)
+  _extensions = [
+    starterKit.default.configure({ codeBlock: false, link: false }),
+    image.default,
+    link.default.configure({ openOnClick: true }),
+    codeBlockLowlight.default.configure({ lowlight }),
+    youtube.default,
+  ]
+  _generateHTML = tiptapHtml.generateHTML
+  return { extensions: _extensions, generateHTML: _generateHTML }
+}
+
+// ── Listing-only columns (no content_zh / content_en) ──
+const POST_LIST_COLUMNS = 'id,title_zh,title_en,slug,excerpt_zh,excerpt_en,skill_topic_id,tags,featured_image,status,is_premium,is_recommended,published_at'
 
 // Data
 const mains = ref<SkillMainCategory[]>([])
@@ -35,6 +49,7 @@ const subs = ref<SkillSubCategory[]>([])
 const topics = ref<SkillTopic[]>([])
 const posts = ref<Post[]>([])
 const isLoading = ref(true)
+const isContentLoading = ref(false)
 
 // State
 const activeMainId = ref<string | null>(null)
@@ -48,7 +63,7 @@ onMounted(async () => {
     supabase.from('skill_main_categories').select('*').order('sort_order'),
     supabase.from('skill_sub_categories').select('*').order('sort_order'),
     supabase.from('skill_topics').select('*').order('sort_order'),
-    supabase.from('posts').select('*').eq('status', 'published').order('published_at', { ascending: false })
+    supabase.from('posts').select(POST_LIST_COLUMNS).eq('status', 'published').order('published_at', { ascending: false })
   ])
   
   if (resMains.data) mains.value = resMains.data
@@ -62,6 +77,7 @@ onMounted(async () => {
     const targetPost = posts.value.find(p => p.slug === articleSlug)
     if (targetPost) {
       activePost.value = targetPost
+      loadPostContent(targetPost)
       expandedTopicId.value = targetPost.skill_topic_id || null
       const topic = topics.value.find(t => t.id === targetPost?.skill_topic_id)
       if (topic) {
@@ -82,7 +98,7 @@ onMounted(async () => {
     const defaultSub = subs.value.find(s => s.main_id === firstMainId)
     if (defaultSub) activeSubId.value = defaultSub.id
     // Auto-open recommended post for default main category
-    autoOpenRecommended(firstMainId)
+    await autoOpenRecommended(firstMainId)
   }
   
   isLoading.value = false
@@ -104,7 +120,7 @@ function getPostsForTopic(topicId: string) {
   return posts.value.filter(p => p.skill_topic_id === topicId)
 }
 
-function selectMain(id: string) {
+async function selectMain(id: string) {
   activeMainId.value = id
   const matchingSubs = subs.value.filter(s => s.main_id === id)
   const firstSub = matchingSubs[0]
@@ -116,13 +132,13 @@ function selectMain(id: string) {
   activePost.value = null
   expandedTopicId.value = null
   // Auto-open recommended post for this main category
-  autoOpenRecommended(id)
+  await autoOpenRecommended(id)
 }
 
 /**
  * Find and auto-open the recommended post for a given main category.
  */
-function autoOpenRecommended(mainId: string) {
+async function autoOpenRecommended(mainId: string) {
   const recommended = posts.value.find(p => {
     if (!p.is_recommended || !p.skill_topic_id) return false
     const topic = topics.value.find(t => t.id === p.skill_topic_id)
@@ -132,6 +148,7 @@ function autoOpenRecommended(mainId: string) {
   })
   if (recommended) {
     activePost.value = recommended
+    await loadPostContent(recommended)
     expandedTopicId.value = recommended.skill_topic_id || null
     // Also set the correct sub category
     const topic = topics.value.find(t => t.id === recommended.skill_topic_id)
@@ -151,9 +168,30 @@ function toggleTopic(id: string) {
   expandedTopicId.value = expandedTopicId.value === id ? null : id
 }
 
-function selectPost(post: Post) {
+async function selectPost(post: Post) {
   activePost.value = post
   router.push({ query: { ...route.query, article: post.slug } })
+  await loadPostContent(post)
+}
+
+// ── On-demand content loader ──
+async function loadPostContent(post: Post) {
+  // Skip if content already loaded
+  if (post.content_zh !== undefined && post.content_zh !== null) return
+  isContentLoading.value = true
+  try {
+    const { data } = await supabase
+      .from('posts')
+      .select('content_zh, content_en')
+      .eq('id', post.id)
+      .single()
+    if (data) {
+      post.content_zh = data.content_zh
+      post.content_en = data.content_en
+    }
+  } finally {
+    isContentLoading.value = false
+  }
 }
 
 // Watch URL changes for history navigation (back/forward keys)
@@ -166,6 +204,7 @@ watch(() => route.query.article, (newSlug) => {
     const targetPost = posts.value.find(p => p.slug === newSlug)
     if (targetPost) {
       activePost.value = targetPost
+      loadPostContent(targetPost)
       expandedTopicId.value = targetPost.skill_topic_id || null
       const topic = topics.value.find(t => t.id === targetPost?.skill_topic_id)
       if (topic) {
@@ -195,28 +234,39 @@ watch(
   { immediate: true }
 )
 
-const renderedContent = computed(() => {
-  if (!activePost.value) return ''
+// ── Rendered HTML (async because tiptap is lazy-loaded) ──
+const renderedHtml = ref('')
 
-  let content: Record<string, unknown> | null = null
-  if (currentLocale.value === 'zh-TW') {
-    content = activePost.value.content_zh
-  } else if (!isTiptapEmpty(activePost.value.content_en)) {
-    content = activePost.value.content_en
-  } else if (translatedContent.value) {
-    content = translatedContent.value
-  } else {
-    // Fallback: show Chinese while translating
-    content = activePost.value.content_zh
-  }
+watch(
+  () => [activePost.value?.id, currentLocale.value, translatedContent.value, isContentLoading.value],
+  async () => {
+    if (!activePost.value) { renderedHtml.value = ''; return }
+    // Wait for content to be loaded
+    if (activePost.value.content_zh === undefined || activePost.value.content_zh === null) {
+      if (isContentLoading.value) return // still loading
+    }
 
-  if (!content) return '<p>No content available.</p>'
-  try {
-    return generateHTML(content as any, extensions)
-  } catch {
-    return '<p>Content rendering error.</p>'
-  }
-})
+    let content: Record<string, unknown> | null = null
+    if (currentLocale.value === 'zh-TW') {
+      content = activePost.value.content_zh
+    } else if (!isTiptapEmpty(activePost.value.content_en)) {
+      content = activePost.value.content_en
+    } else if (translatedContent.value) {
+      content = translatedContent.value
+    } else {
+      content = activePost.value.content_zh
+    }
+
+    if (!content) { renderedHtml.value = '<p>No content available.</p>'; return }
+    try {
+      const { generateHTML, extensions } = await getTiptap()
+      renderedHtml.value = generateHTML(content as any, extensions)
+    } catch {
+      renderedHtml.value = '<p>Content rendering error.</p>'
+    }
+  },
+  { immediate: true }
+)
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return ''
@@ -226,6 +276,20 @@ function formatDate(dateStr: string | null): string {
     day: 'numeric',
   })
 }
+
+const imageOverrides: Record<string, string> = {
+  'obsidian-skills': '/images/post-obsidian-skills.png',
+  'jackie-zhang-portfolio': '/images/post-portfolio-design.png',
+  'sss': '/images/post-tofu-dishes.png',
+  'asdasdasda': '/images/post-premium-content.png',
+}
+
+const activePostImage = computed(() => {
+  if (!activePost.value) return null
+  const slug = activePost.value.slug
+  if (slug && imageOverrides[slug]) return imageOverrides[slug]
+  return activePost.value.featured_image
+})
 
 /** Apple-style menu: icon per main category by slug (Logic / Code / Motion) */
 const MAIN_ICONS: Record<string, string> = {
@@ -250,7 +314,7 @@ function getMainIcon(main: SkillMainCategory): string {
 
 <template>
   <div class="py-16 sm:py-24">
-    <div class="mx-auto max-w-[1200px] px-4 sm:px-6">
+    <div class="mx-auto max-w-[1800px] px-4 sm:px-6">
       
       <!-- Top Title（標題與簡介跟隨後台選單管理） -->
       <div class="mb-10 block">
@@ -342,15 +406,15 @@ function getMainIcon(main: SkillMainCategory): string {
 
         <!-- Right Content Pane -->
         <div class="lg:flex-1 min-h-[500px]">
-          <div v-if="!activePost" class="h-full flex items-center justify-center border border-dashed border-bp-border p-16 rounded">
+          <div v-if="!activePost" class="h-full flex items-center justify-center p-16">
             <p class="font-blueprint text-bp-muted text-sm tracking-widest uppercase">
               Select an article to view here
             </p>
           </div>
           
-          <article v-else class="bp-card p-6 sm:p-10">
+          <article v-else class="p-6 sm:p-10">
             <!-- Header -->
-            <header class="mb-10">
+            <header class="relative mb-10">
               <div class="mb-4 flex items-center gap-3">
                 <span
                   v-if="activePost.is_premium"
@@ -363,7 +427,13 @@ function getMainIcon(main: SkillMainCategory): string {
                 </span>
               </div>
 
-              <h1 class="font-blueprint text-3xl leading-tight tracking-wide text-bp-white sm:text-4xl">
+              <!-- Article actions (top-right) -->
+              <ArticleActions
+                :title="localizedField(activePost.title_zh, activePost.title_en)"
+                class="absolute right-0 top-0"
+              />
+
+              <h1 class="pr-36 font-blueprint text-3xl leading-tight tracking-wide text-bp-white sm:text-4xl">
                 {{ localizedField(activePost.title_zh, activePost.title_en) }}
               </h1>
 
@@ -380,11 +450,11 @@ function getMainIcon(main: SkillMainCategory): string {
 
             <!-- Featured image -->
             <div
-              v-if="activePost.featured_image"
+              v-if="activePostImage"
               class="mb-10 aspect-video overflow-hidden border border-bp-border"
             >
               <img
-                :src="activePost.featured_image"
+                :src="activePostImage"
                 :alt="localizedField(activePost.title_zh, activePost.title_en)"
                 class="h-full w-full object-cover"
               />
@@ -399,10 +469,17 @@ function getMainIcon(main: SkillMainCategory): string {
               🌐 Auto-translated
             </div>
 
+            <!-- Content loading -->
+            <div v-if="isContentLoading" class="py-10 text-center">
+              <span class="inline-block h-5 w-5 animate-spin rounded-full border-2 border-bp-accent border-t-transparent"></span>
+              <span class="ml-2 text-sm text-bp-muted">{{ t('common.loading') }}</span>
+            </div>
+
             <!-- Content -->
             <div
+              v-else
               class="article-content"
-              v-html="renderedContent"
+              v-html="renderedHtml"
             />
           </article>
         </div>

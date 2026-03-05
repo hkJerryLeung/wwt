@@ -35,7 +35,7 @@ function heroText(key: 'heroGreeting' | 'heroName' | 'heroTagline' | 'heroDescri
         </h1>
 
         <!-- Description -->
-        <p class="mt-6 max-w-2xl text-base leading-relaxed text-bp-subtle sm:text-lg">
+        <p class="mt-6 max-w-2xl text-lg leading-relaxed text-bp-subtle sm:text-xl">
           {{ heroText('heroDescription', 'hero.description') }}
         </p>
 
@@ -55,7 +55,7 @@ function heroText(key: 'heroGreeting' | 'heroName' | 'heroTagline' | 'heroDescri
         <!-- Decorative measurement line -->
         <div class="mt-16 flex items-center gap-3 text-bp-muted">
           <div class="h-px flex-1 bg-bp-border" />
-          <span class="font-blueprint text-xs">/// scroll to explore ///</span>
+          <span class="font-blueprint text-sm">/// scroll to explore ///</span>
           <div class="h-px flex-1 bg-bp-border" />
         </div>
       </div>

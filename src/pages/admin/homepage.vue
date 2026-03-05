@@ -83,7 +83,7 @@ function handleReset() {
 
 <template>
   <div>
-    <h1 class="mb-8 font-blueprint text-2xl tracking-wide text-bp-white">
+    <h1 class="mb-4 font-blueprint text-2xl tracking-wide text-bp-white">
       {{ t('admin.homepage') }}
     </h1>
 
@@ -91,218 +91,132 @@ function handleReset() {
       {{ t('admin.homepage_description') }}
     </p>
 
-    <div class="max-w-2xl space-y-8">
+    <div class="space-y-3" style="max-width: 700px;">
       <!-- Hero -->
-      <section class="space-y-4">
-        <h2 class="font-blueprint text-lg text-bp-accent">
-          {{ t('admin.homepage_hero') }}
-        </h2>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div class="bp-card relative p-6 sm:col-span-2">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('hero.greeting') }}</label>
-            <input
-              v-model="heroGreeting"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('hero.greeting')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('hero.name') }}</label>
-            <input
-              v-model="heroName"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('hero.name')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('hero.tagline') }}</label>
-            <input
-              v-model="heroTagline"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('hero.tagline')"
-            />
-          </div>
-          <div class="bp-card relative p-6 sm:col-span-2">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('hero.description') }}</label>
-            <textarea
-              v-model="heroDescription"
-              rows="3"
-              class="w-full resize-y rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('hero.description')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('hero.cta_explore') }}</label>
-            <input
-              v-model="heroCtaExplore"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('hero.cta_explore')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('hero.cta_patreon') }}</label>
-            <input
-              v-model="heroCtaPatreon"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('hero.cta_patreon')"
-            />
-          </div>
+      <h4 class="text-[10px] uppercase tracking-widest text-bp-muted mb-2">{{ t('admin.homepage_hero') }}</h4>
+
+      <div>
+        <label class="pp-label">{{ t('hero.greeting') }}</label>
+        <input v-model="heroGreeting" type="text" class="pp-input" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="pp-label">{{ t('hero.name') }}</label>
+          <input v-model="heroName" type="text" class="pp-input" />
         </div>
-      </section>
+        <div>
+          <label class="pp-label">{{ t('hero.tagline') }}</label>
+          <input v-model="heroTagline" type="text" class="pp-input" />
+        </div>
+      </div>
+
+      <div>
+        <label class="pp-label">{{ t('hero.description') }}</label>
+        <textarea v-model="heroDescription" rows="3" class="pp-input" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="pp-label">{{ t('hero.cta_explore') }}</label>
+          <input v-model="heroCtaExplore" type="text" class="pp-input" />
+        </div>
+        <div>
+          <label class="pp-label">{{ t('hero.cta_patreon') }}</label>
+          <input v-model="heroCtaPatreon" type="text" class="pp-input" />
+        </div>
+      </div>
 
       <!-- Categories -->
-      <section class="space-y-4">
-        <h2 class="font-blueprint text-lg text-bp-accent">
-          {{ t('admin.homepage_categories') }}
-        </h2>
-        <div class="bp-card relative p-6">
-          <div class="bp-corner-marks absolute inset-0" />
-          <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.categories_title') }}</label>
-          <input
-            v-model="categoriesTitle"
-            type="text"
-            class="mb-4 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            :placeholder="t('home.categories_title')"
-          />
-          <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.categories_subtitle') }}</label>
-          <input
-            v-model="categoriesSubtitle"
-            type="text"
-            class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            :placeholder="t('home.categories_subtitle')"
-          />
+      <h4 class="text-[10px] uppercase tracking-widest text-bp-muted mt-4 mb-2 border-t border-bp-border pt-3">{{ t('admin.homepage_categories') }}</h4>
+
+      <div>
+        <label class="pp-label">{{ t('home.categories_title') }}</label>
+        <input v-model="categoriesTitle" type="text" class="pp-input" />
+      </div>
+      <div>
+        <label class="pp-label">{{ t('home.categories_subtitle') }}</label>
+        <input v-model="categoriesSubtitle" type="text" class="pp-input" />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="pp-label">{{ t('home.cat_ai_coding') }}</label>
+          <input v-model="catAiCoding" type="text" class="pp-input" />
+          <label class="pp-label mt-2">Description</label>
+          <input v-model="catAiCodingDesc" type="text" class="pp-input" />
         </div>
-        <div class="grid gap-4 sm:grid-cols-2">
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cat_ai_coding') }}</label>
-            <input
-              v-model="catAiCoding"
-              type="text"
-              class="mb-3 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_ai_coding')"
-            />
-            <label class="mb-2 block text-xs text-bp-muted">Description</label>
-            <input
-              v-model="catAiCodingDesc"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_ai_coding_desc')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cat_ai_video') }}</label>
-            <input
-              v-model="catAiVideo"
-              type="text"
-              class="mb-3 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_ai_video')"
-            />
-            <label class="mb-2 block text-xs text-bp-muted">Description</label>
-            <input
-              v-model="catAiVideoDesc"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_ai_video_desc')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cat_tools') }}</label>
-            <input
-              v-model="catTools"
-              type="text"
-              class="mb-3 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_tools')"
-            />
-            <label class="mb-2 block text-xs text-bp-muted">Description</label>
-            <input
-              v-model="catToolsDesc"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_tools_desc')"
-            />
-          </div>
-          <div class="bp-card relative p-6">
-            <div class="bp-corner-marks absolute inset-0" />
-            <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cat_works') }}</label>
-            <input
-              v-model="catWorks"
-              type="text"
-              class="mb-3 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_works')"
-            />
-            <label class="mb-2 block text-xs text-bp-muted">Description</label>
-            <input
-              v-model="catWorksDesc"
-              type="text"
-              class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('home.cat_works_desc')"
-            />
-          </div>
+        <div>
+          <label class="pp-label">{{ t('home.cat_ai_video') }}</label>
+          <input v-model="catAiVideo" type="text" class="pp-input" />
+          <label class="pp-label mt-2">Description</label>
+          <input v-model="catAiVideoDesc" type="text" class="pp-input" />
         </div>
-      </section>
+        <div>
+          <label class="pp-label">{{ t('home.cat_tools') }}</label>
+          <input v-model="catTools" type="text" class="pp-input" />
+          <label class="pp-label mt-2">Description</label>
+          <input v-model="catToolsDesc" type="text" class="pp-input" />
+        </div>
+        <div>
+          <label class="pp-label">{{ t('home.cat_works') }}</label>
+          <input v-model="catWorks" type="text" class="pp-input" />
+          <label class="pp-label mt-2">Description</label>
+          <input v-model="catWorksDesc" type="text" class="pp-input" />
+        </div>
+      </div>
 
       <!-- CTA -->
-      <section class="space-y-4">
-        <h2 class="font-blueprint text-lg text-bp-accent">
-          {{ t('admin.homepage_cta') }}
-        </h2>
-        <div class="bp-card relative p-6">
-          <div class="bp-corner-marks absolute inset-0" />
-          <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cta_title') }}</label>
-          <input
-            v-model="ctaTitle"
-            type="text"
-            class="mb-4 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            :placeholder="t('home.cta_title')"
-          />
-          <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cta_description') }}</label>
-          <textarea
-            v-model="ctaDescription"
-            rows="2"
-            class="mb-4 w-full resize-y rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            :placeholder="t('home.cta_description')"
-          />
-          <label class="mb-2 block text-sm font-medium text-bp-subtle">{{ t('home.cta_button') }}</label>
-          <input
-            v-model="ctaButton"
-            type="text"
-            class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            :placeholder="t('home.cta_button')"
-          />
-        </div>
-      </section>
+      <h4 class="text-[10px] uppercase tracking-widest text-bp-muted mt-4 mb-2 border-t border-bp-border pt-3">{{ t('admin.homepage_cta') }}</h4>
+
+      <div>
+        <label class="pp-label">{{ t('home.cta_title') }}</label>
+        <input v-model="ctaTitle" type="text" class="pp-input" />
+      </div>
+      <div>
+        <label class="pp-label">{{ t('home.cta_description') }}</label>
+        <textarea v-model="ctaDescription" rows="2" class="pp-input" />
+      </div>
+      <div>
+        <label class="pp-label">{{ t('home.cta_button') }}</label>
+        <input v-model="ctaButton" type="text" class="pp-input" />
+      </div>
 
       <!-- Actions -->
-      <div class="flex flex-wrap gap-3">
-        <button
-          type="button"
-          class="bp-btn-accent"
-          @click="handleSave"
-        >
+      <div class="flex flex-wrap gap-3 mt-6 border-t border-bp-border pt-4">
+        <button type="button" class="bp-btn-accent" @click="handleSave">
           {{ t('admin.appearance_save') }}
         </button>
-        <button
-          type="button"
-          class="bp-btn-primary"
-          @click="handleReset"
-        >
+        <button type="button" class="bp-btn-primary" @click="handleReset">
           {{ t('admin.homepage_reset') }}
         </button>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.pp-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pp-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(16, 16, 16, 1);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pp-input:focus {
+  border-color: #990011;
+}
+</style>

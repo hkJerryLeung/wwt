@@ -2,14 +2,13 @@
 import { onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useAuthStore } from '@/stores/auth'
-import { useAppearanceStore } from '@/stores/appearance'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
+import { useSiteSettingsStore } from '@/stores/siteSettings'
 
 const route = useRoute()
 const { locale } = useI18n()
-const authStore = useAuthStore()
+const siteSettings = useSiteSettingsStore()
 
 const isAdminLogin = computed(() => route.name === 'admin-login')
 const isAuth = computed(() => route.path.startsWith('/auth'))
@@ -20,14 +19,12 @@ function syncLocale() {
   if (routeLocale && ['zh-TW', 'en'].includes(routeLocale)) {
     locale.value = routeLocale
   } else if (!route.path.startsWith('/admin')) {
-    locale.value = 'zh-TW'
+    locale.value = siteSettings.effectiveDefaultLocale()
   }
 }
 
-onMounted(async () => {
-  await authStore.initialize()
+onMounted(() => {
   syncLocale()
-  useAppearanceStore().apply()
 })
 
 watch(() => route.params.locale, () => {
@@ -35,14 +32,17 @@ watch(() => route.params.locale, () => {
 })
 </script>
 
+
 <template>
-  <template v-if="isAdminLogin || isAuth">
-    <RouterView />
-  </template>
-  <AdminLayout v-else-if="isAdmin">
-    <RouterView />
-  </AdminLayout>
-  <DefaultLayout v-else>
-    <RouterView />
-  </DefaultLayout>
+  <div v-cloak>
+    <template v-if="isAdminLogin || isAuth">
+      <RouterView />
+    </template>
+    <AdminLayout v-else-if="isAdmin">
+      <RouterView />
+    </AdminLayout>
+    <DefaultLayout v-else>
+      <RouterView />
+    </DefaultLayout>
+  </div>
 </template>

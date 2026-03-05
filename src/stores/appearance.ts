@@ -58,14 +58,22 @@ function applyAccentToDocument(accent: string) {
 }
 
 export const useAppearanceStore = defineStore('appearance', () => {
+  // ── 同步從 localStorage 還原最後儲存值（防止 FOUC）──
+  const _cached = (() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      return raw ? parsePayload(JSON.parse(raw)) : {}
+    } catch { return {} }
+  })()
+
   const isLoaded = ref(false)
-  const accentColor = ref('')
-  const logoUrl = ref('')
-  const siteName = ref('')
-  const gridStyle = ref<GridStyle>('normal')
-  const backgroundType = ref<BackgroundType>('grid')
-  const backgroundColor = ref('')
-  const backgroundImageUrl = ref('')
+  const accentColor = ref(_cached.accentColor ?? '')
+  const logoUrl = ref(_cached.logoUrl ?? '')
+  const siteName = ref(_cached.siteName ?? '')
+  const gridStyle = ref<GridStyle>(_cached.gridStyle ?? 'normal')
+  const backgroundType = ref<BackgroundType>(_cached.backgroundType ?? 'grid')
+  const backgroundColor = ref(_cached.backgroundColor ?? '')
+  const backgroundImageUrl = ref(_cached.backgroundImageUrl ?? '')
 
   /** 從 Supabase 載入設定，供 app 啟動時呼叫以首屏顯示正確內容 */
   async function hydrateFromServer() {
@@ -114,17 +122,14 @@ export const useAppearanceStore = defineStore('appearance', () => {
     }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
     apply()
-    try {
+    Promise.resolve(
       supabase
         .from('site_config')
         .upsert(
           { key: SITE_CONFIG_KEY, value: payload, updated_at: new Date().toISOString() },
           { onConflict: 'key' }
         )
-        .then(() => { })
-    } catch {
-      // ignore; localStorage already saved
-    }
+    ).catch(() => { /* ignore; localStorage already saved */ })
   }
 
   function apply() {

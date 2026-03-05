@@ -79,52 +79,87 @@ export interface ProductPageContent {
     learnMoreUrl?: string
     docsUrl?: string
     downloadUrl?: string
+    buyLabel?: string
+    learnMoreLabel?: string
+    docsLabel?: string
+    downloadLabel?: string
     mediaUrl?: string
     mediaType?: 'image' | 'video'
   }
   valueProposition?: {
     main?: string
-    sub?: string
+    sub?: string | Record<string, unknown>
     emotion?: string
   }
   features?: Array<{
     title?: string
-    description?: string
+    description?: string | Record<string, unknown>
     bullets?: string[]
+    imageUrl?: string
+    visible?: boolean
   }>
   whatsNew?: Array<{
     title?: string
     description?: string
     ctaText?: string
     ctaUrl?: string
+    visible?: boolean
   }>
   testimonials?: Array<{
     name?: string
     url?: string
     role?: string
     quote?: string
+    visible?: boolean
   }>
   pricing?: {
     title?: string
     subtitle?: string
-    body?: string
+    body?: string | Record<string, unknown>
     licenseNote?: string
     renewUrl?: string
     roadmapUrl?: string
     price?: string
     buyUrl?: string
+    highlights?: Array<{
+      text?: string
+      visible?: boolean
+    }>
   }
   faq?: Array<{
     category?: 'Creative' | 'Technical' | 'License'
     question?: string
-    answer?: string
+    answer?: string | Record<string, unknown>
+    visible?: boolean
   }>
   underlings?: Array<{
     name?: string
     description?: string
     learnMoreUrl?: string
+    visible?: boolean
   }>
-  specs?: Record<string, string>
+  specs?: Array<{
+    label?: string
+    value?: string
+    visible?: boolean
+  }>
+  docs?: {
+    categories?: Array<{
+      id?: string
+      title?: string
+      visible?: boolean
+      pages?: Array<{
+        id?: string
+        title?: string
+        visible?: boolean
+        steps?: Array<{
+          id?: string
+          title?: string
+          content?: string | Record<string, unknown>
+        }>
+      }>
+    }>
+  }
 }
 
 export interface Project {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-02-24T14:29:17.132Z",
+  "generatedAt": "2026-03-05T04:10:47.539Z",
   "technology": {
     "language": "TypeScript",
     "framework": "Vue"
@@ -14,41 +14,42 @@
     "installed_skills": [
       {
         "filename": "api-design.skill.md",
-        "size": 3806,
-        "mtime": "2026-02-23T15:59:32.346Z",
-        "sha1": "3fcde7c0b176d4979e81314b9120f5aa8abc3d7f"
+        "size": 3806
+      },
+      {
+        "filename": "db-schema.skill.md",
+        "size": 5160
       },
       {
         "filename": "performance.skill.md",
-        "size": 9823,
-        "mtime": "2026-02-18T03:06:42.853Z",
-        "sha1": "a0185901e843840eca5800c01eba0793da5861d1"
+        "size": 9823
       },
       {
         "filename": "security.skill.md",
-        "size": 10485,
-        "mtime": "2026-02-18T03:06:42.852Z",
-        "sha1": "aef5523c26949fd22cc0b182804411e3d5d0c490"
+        "size": 10485
       },
       {
         "filename": "tech-stack.skill.md",
-        "size": 3313,
-        "mtime": "2026-02-18T03:06:42.854Z",
-        "sha1": "31c9ea04c1b9f533f6ce6d28e2253a96b4515acb"
+        "size": 3313
       },
       {
         "filename": "ui-design.skill.md",
-        "size": 6176,
-        "mtime": "2026-02-18T03:06:42.854Z",
-        "sha1": "eb255a88d6a5b92aea32d86aa5da7d74fd4d1625"
+        "size": 6176
       },
       {
         "filename": "wwt-project-context.skill.md",
-        "size": 9369,
-        "mtime": "2026-02-23T15:25:20.107Z",
-        "sha1": "22251600768b6f0379f3a483c5de5f44178f99b4"
+        "size": 9344
       }
     ],
-    "available_workflows": []
+    "available_workflows": [
+      {
+        "filename": "deploy.md",
+        "size": 6847
+      },
+      {
+        "filename": "testing.md",
+        "size": 7213
+      }
+    ]
   }
 }

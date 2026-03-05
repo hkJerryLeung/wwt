@@ -71,9 +71,19 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/apps/[slug].vue'),
       },
       {
+        path: 'apps/:slug/docs',
+        name: 'app-docs',
+        component: () => import('@/pages/apps/[slug]/docs.vue'),
+      },
+      {
         path: 'premium',
         name: 'premium',
         component: () => import('@/pages/premium/index.vue'),
+      },
+      {
+        path: 'profile',
+        name: 'profile',
+        component: () => import('@/pages/profile/index.vue'),
       },
     ],
   },
@@ -124,6 +134,11 @@ const routes: RouteRecordRaw[] = [
         component: () => import('@/pages/admin/media.vue'),
       },
       {
+        path: 'purchases',
+        name: 'admin-purchases',
+        component: () => import('@/pages/admin/purchases.vue'),
+      },
+      {
         path: 'menu',
         name: 'admin-menu',
         component: () => import('@/pages/admin/menu/index.vue'),
@@ -148,7 +163,17 @@ const routes: RouteRecordRaw[] = [
         name: 'admin-homepage',
         component: () => import('@/pages/admin/homepage.vue'),
       },
+      {
+        path: 'premium',
+        name: 'admin-premium',
+        component: () => import('@/pages/admin/premium.vue'),
+      },
     ],
+  },
+  // Catch-all: redirect any unmatched path to home
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/',
   },
 ]
 
@@ -160,6 +185,7 @@ export const router = createRouter({
     return { top: 0 }
   },
 })
+
 
 const keyToRouteConfig: Record<
   string,
@@ -202,6 +228,13 @@ export function registerDynamicNavRoutes() {
   })
 }
 
+// ── Register dynamic routes synchronously ──
+// Custom nav paths (e.g. /workshop → /ai) must be registered BEFORE the
+// router resolves the initial URL. Otherwise the URL won't match until
+// the async hydration completes, causing route bouncing when the tab
+// See docs/supabase-cross-browser.md §5.
+registerDynamicNavRoutes()
+
 router.beforeEach(async (to, _from, next) => {
   if (to.params.locale) {
     const locale = to.params.locale as string
@@ -213,7 +246,13 @@ router.beforeEach(async (to, _from, next) => {
   if (to.meta.requiresAuth) {
     const { useAuthStore } = await import('@/stores/auth')
     const authStore = useAuthStore()
-    // Wait for auth to initialize if needed
+    try {
+      if (!authStore.isInitialized) {
+        await authStore.initialize()
+      }
+    } catch {
+      return next({ name: 'admin-login' })
+    }
     if (!authStore.isAuthenticated) {
       return next({ name: 'admin-login' })
     }

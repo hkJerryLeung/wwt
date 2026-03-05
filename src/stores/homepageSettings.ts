@@ -67,26 +67,34 @@ function getPayload(state: HomepageSettingsState): HomepageSettingsState {
 }
 
 export const useHomepageSettingsStore = defineStore('homepageSettings', () => {
+  // ── 同步從 localStorage 還原最後儲存值（防止 FOUC）──
+  const _cached = (() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY)
+      return raw ? parsePayload(JSON.parse(raw)) : {}
+    } catch { return {} }
+  })()
+
   const isLoaded = ref(false)
-  const heroGreeting = ref('')
-  const heroName = ref('')
-  const heroTagline = ref('')
-  const heroDescription = ref('')
-  const heroCtaExplore = ref('')
-  const heroCtaPatreon = ref('')
-  const categoriesTitle = ref('')
-  const categoriesSubtitle = ref('')
-  const catAiCoding = ref('')
-  const catAiCodingDesc = ref('')
-  const catAiVideo = ref('')
-  const catAiVideoDesc = ref('')
-  const catTools = ref('')
-  const catToolsDesc = ref('')
-  const catWorks = ref('')
-  const catWorksDesc = ref('')
-  const ctaTitle = ref('')
-  const ctaDescription = ref('')
-  const ctaButton = ref('')
+  const heroGreeting = ref(_cached.heroGreeting ?? '')
+  const heroName = ref(_cached.heroName ?? '')
+  const heroTagline = ref(_cached.heroTagline ?? '')
+  const heroDescription = ref(_cached.heroDescription ?? '')
+  const heroCtaExplore = ref(_cached.heroCtaExplore ?? '')
+  const heroCtaPatreon = ref(_cached.heroCtaPatreon ?? '')
+  const categoriesTitle = ref(_cached.categoriesTitle ?? '')
+  const categoriesSubtitle = ref(_cached.categoriesSubtitle ?? '')
+  const catAiCoding = ref(_cached.catAiCoding ?? '')
+  const catAiCodingDesc = ref(_cached.catAiCodingDesc ?? '')
+  const catAiVideo = ref(_cached.catAiVideo ?? '')
+  const catAiVideoDesc = ref(_cached.catAiVideoDesc ?? '')
+  const catTools = ref(_cached.catTools ?? '')
+  const catToolsDesc = ref(_cached.catToolsDesc ?? '')
+  const catWorks = ref(_cached.catWorks ?? '')
+  const catWorksDesc = ref(_cached.catWorksDesc ?? '')
+  const ctaTitle = ref(_cached.ctaTitle ?? '')
+  const ctaDescription = ref(_cached.ctaDescription ?? '')
+  const ctaButton = ref(_cached.ctaButton ?? '')
 
   /** 從 Supabase 載入設定，供 app 啟動時呼叫以首屏顯示正確內容 */
   async function hydrateFromServer() {
@@ -177,17 +185,14 @@ export const useHomepageSettingsStore = defineStore('homepageSettings', () => {
       ctaButton: ctaButton.value,
     })
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload))
-    try {
+    Promise.resolve(
       supabase
         .from('site_config')
         .upsert(
           { key: SITE_CONFIG_KEY, value: payload, updated_at: new Date().toISOString() },
           { onConflict: 'key' }
         )
-        .then(() => { })
-    } catch {
-      // ignore; localStorage already saved
-    }
+    ).catch(() => { /* ignore; localStorage already saved */ })
   }
 
   function reset() {

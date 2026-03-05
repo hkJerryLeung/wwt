@@ -15,9 +15,8 @@ const categories = computed(() => [
     descKey: 'catAiCodingDesc' as const,
     i18nTitle: 'home.cat_ai_coding',
     i18nDesc: 'home.cat_ai_coding_desc',
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />`,
+    image: '/images/categories/ai-coding.png',
     path: navStore.getPathByKey('workshop'),
-    accent: 'text-bp-accent',
   },
   {
     key: 'ai_video',
@@ -25,9 +24,8 @@ const categories = computed(() => [
     descKey: 'catAiVideoDesc' as const,
     i18nTitle: 'home.cat_ai_video',
     i18nDesc: 'home.cat_ai_video_desc',
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />`,
+    image: '/images/categories/ai-video.png',
     path: navStore.getPathByKey('workshop'),
-    accent: 'text-bp-success',
   },
   {
     key: 'tools',
@@ -35,9 +33,8 @@ const categories = computed(() => [
     descKey: 'catToolsDesc' as const,
     i18nTitle: 'home.cat_tools',
     i18nDesc: 'home.cat_tools_desc',
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />`,
+    image: '/images/categories/tools.png',
     path: navStore.getPathByKey('lab'),
-    accent: 'text-bp-warning',
   },
   {
     key: 'works',
@@ -45,9 +42,8 @@ const categories = computed(() => [
     descKey: 'catWorksDesc' as const,
     i18nTitle: 'home.cat_works',
     i18nDesc: 'home.cat_works_desc',
-    icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />`,
+    image: '/images/categories/showcase.png',
     path: navStore.getPathByKey('showcase'),
-    accent: 'text-bp-error',
   },
 ])
 
@@ -73,56 +69,193 @@ function catDesc(cat: (typeof categories.value)[0]): string {
 </script>
 
 <template>
-  <section class="py-20 sm:py-28">
-    <div class="mx-auto max-w-[1080px] px-4 sm:px-6">
-      <!-- Section header -->
-      <div class="mb-12">
-        <span class="bp-section-number mb-3 block">01.</span>
-        <h2 class="font-blueprint text-3xl tracking-wide text-bp-white sm:text-4xl">
-          {{ categoriesTitleText() }}
-        </h2>
-        <p class="mt-3 text-bp-subtle">{{ categoriesSubtitleText() }}</p>
-      </div>
+  <section class="cat-section">
+    <!-- Section header — matches sympos "LINEUP" header layout -->
+    <div class="cat-header">
+      <span class="cat-label">EXPLORE</span>
+      <h2 class="cat-heading">
+        {{ categoriesTitleText() }}
+      </h2>
+      <p class="cat-subheading">{{ categoriesSubtitleText() }}</p>
+    </div>
 
-      <!-- Cards grid -->
-      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <router-link
-          v-for="cat in categories"
-          :key="cat.key"
-          :to="localizedPath(cat.path)"
-          class="bp-card group relative p-6 transition-all duration-200"
-        >
-          <!-- Corner marks -->
-          <div class="bp-corner-marks absolute inset-0" />
-
-          <!-- Icon -->
-          <div class="mb-4">
-            <svg
-              class="h-8 w-8 transition-colors"
-              :class="cat.accent"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              v-html="cat.icon"
-            />
-          </div>
-
-          <!-- Title -->
-          <h3 class="mb-2 font-sans text-base font-semibold text-bp-white">
-            {{ catTitle(cat) }}
-          </h3>
-
-          <!-- Description -->
-          <p class="text-sm leading-relaxed text-bp-muted">
-            {{ catDesc(cat) }}
-          </p>
-
-          <!-- Arrow indicator -->
-          <div class="mt-4 flex items-center gap-1 text-xs text-bp-muted transition-colors group-hover:text-bp-accent">
-            <span class="font-blueprint">→</span>
-          </div>
-        </router-link>
+    <!-- Marquee — full bleed, edge-to-edge -->
+    <div class="cat-marquee">
+      <div class="cat-marquee-track">
+        <!-- Render 4 copies to guarantee no gap on any viewport -->
+        <template v-for="n in 4" :key="'set-' + n">
+          <router-link
+            v-for="cat in categories"
+            :key="cat.key + '-' + n"
+            :to="localizedPath(cat.path)"
+            class="cat-card"
+          >
+            <div class="cat-card-img">
+              <img :src="cat.image" :alt="catTitle(cat)" loading="lazy" />
+            </div>
+            <h3 class="cat-card-title">{{ catTitle(cat) }}</h3>
+            <p class="cat-card-desc">{{ catDesc(cat) }}</p>
+          </router-link>
+        </template>
       </div>
     </div>
   </section>
 </template>
+
+<style scoped>
+/* ===== Section ===== */
+.cat-section {
+  padding: 6rem 0 7rem;
+}
+
+/* ===== Header (sympos centered style) ===== */
+.cat-header {
+  max-width: 1800px;
+  margin: 0 auto 4rem;
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.cat-label {
+  display: inline-block;
+  font-family: var(--font-blueprint);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  background: var(--color-bp-accent, #990011);
+  border: none;
+  padding: 0.4rem 1.2rem;
+  border-radius: 24px;
+}
+
+.cat-heading {
+  font-family: var(--font-blueprint);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--color-bp-white);
+  letter-spacing: -0.01em;
+}
+
+.cat-subheading {
+  margin-top: 1.25rem;
+  font-size: 20px;
+  line-height: 1.6;
+  color: var(--color-bp-muted);
+}
+
+/* ===== Marquee container ===== */
+.cat-marquee {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ===== Track (auto-scroll) ===== */
+.cat-marquee-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: catScroll 40s linear infinite;
+}
+
+.cat-marquee:hover .cat-marquee-track {
+  animation-play-state: paused;
+}
+
+/* ===== Card — 400px wide to match sympos ===== */
+.cat-card {
+  flex-shrink: 0;
+  width: 400px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.3s ease;
+}
+
+.cat-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ===== Image — aspect ratio ~0.87 (400×460) ===== */
+.cat-card-img {
+  width: 100%;
+  aspect-ratio: 400 / 460;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 0.85rem;
+}
+
+.cat-card-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.cat-card:hover .cat-card-img img {
+  transform: scale(1.04);
+}
+
+/* ===== Typography — matching sympos ===== */
+.cat-card-title {
+  font-family: var(--font-blueprint);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--color-bp-white);
+  margin-bottom: 0.75rem;
+}
+
+.cat-card-desc {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--color-bp-muted);
+}
+
+/* ===== Keyframes ===== */
+@keyframes catScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* Move exactly 25% since we have 4 copies */
+    transform: translateX(-25%);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .cat-section {
+    padding: 4rem 0 5rem;
+  }
+
+  .cat-header {
+    padding: 0 1.25rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .cat-heading {
+    font-size: 28px;
+  }
+
+  .cat-card {
+    width: 280px;
+  }
+
+  .cat-marquee-track {
+    gap: 16px;
+    animation-duration: 28s;
+  }
+
+  .cat-card-title {
+    font-size: 20px;
+  }
+
+  .cat-card-desc {
+    font-size: 15px;
+  }
+}
+</style>

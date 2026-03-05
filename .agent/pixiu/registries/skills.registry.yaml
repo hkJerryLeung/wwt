@@ -1,0 +1,51 @@
+version: 1
+skills:
+  - id: api-design
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: api-design.skill.md
+  - id: db-schema
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: db-schema.skill.md
+  - id: performance
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: performance.skill.md
+  - id: security
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: security.skill.md
+  - id: tech-stack
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: tech-stack.skill.md
+  - id: ui-design
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: ui-design.skill.md
+  - id: wwt-project-context
+    version: 0.0.0
+    risk: medium
+    source: repo
+    base_root: /Volumes/WWT01/01. Project/WWT/WWT09_Website02/01. WWT
+    base_path: .agent/skills
+    spec: wwt-project-context.skill.md

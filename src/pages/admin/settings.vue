@@ -8,10 +8,12 @@ const siteSettings = useSiteSettingsStore()
 
 const localSiteTitle = ref('')
 const localSiteDescription = ref('')
+const localDefaultLocale = ref<'zh-TW' | 'en'>('zh-TW')
 
 function syncFromStore() {
   localSiteTitle.value = siteSettings.siteTitle
   localSiteDescription.value = siteSettings.siteDescription
+  localDefaultLocale.value = siteSettings.defaultLocale || 'zh-TW'
 }
 
 onMounted(() => {
@@ -21,6 +23,7 @@ onMounted(() => {
 function handleSave() {
   siteSettings.siteTitle = localSiteTitle.value
   siteSettings.siteDescription = localSiteDescription.value
+  siteSettings.defaultLocale = localDefaultLocale.value
   siteSettings.save()
 }
 
@@ -32,7 +35,7 @@ function handleReset() {
 
 <template>
   <div>
-    <h1 class="mb-8 font-blueprint text-2xl tracking-wide text-bp-white">
+    <h1 class="mb-4 font-blueprint text-2xl tracking-wide text-bp-white">
       {{ t('admin.settings') }}
     </h1>
 
@@ -40,52 +43,63 @@ function handleReset() {
       {{ t('admin.settings_description') }}
     </p>
 
-    <div class="max-w-xl space-y-6">
+    <div class="space-y-3" style="max-width: 700px;">
       <!-- 網站名稱 -->
-      <div class="bp-card relative p-6">
-        <div class="bp-corner-marks absolute inset-0" />
-        <label class="mb-2 block text-sm font-medium text-bp-subtle">
-          {{ t('admin.settings_site_title') }}
-        </label>
-        <input
-          v-model="localSiteTitle"
-          type="text"
-          class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-          :placeholder="t('admin.settings_site_title_placeholder')"
-        />
+      <div>
+        <label class="pp-label">{{ t('admin.settings_site_title') }}</label>
+        <input v-model="localSiteTitle" type="text" class="pp-input" />
       </div>
 
       <!-- 網站簡介 -->
-      <div class="bp-card relative p-6">
-        <div class="bp-corner-marks absolute inset-0" />
-        <label class="mb-2 block text-sm font-medium text-bp-subtle">
-          {{ t('admin.settings_site_description') }}
-        </label>
-        <textarea
-          v-model="localSiteDescription"
-          rows="3"
-          class="w-full resize-y rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-          :placeholder="t('admin.settings_site_description_placeholder')"
-        />
+      <div>
+        <label class="pp-label">{{ t('admin.settings_site_description') }}</label>
+        <textarea v-model="localSiteDescription" rows="3" class="pp-input" />
       </div>
 
-      <!-- 按鈕 -->
-      <div class="flex flex-wrap gap-3">
-        <button
-          type="button"
-          class="bp-btn-accent"
-          @click="handleSave"
-        >
+      <!-- 預設語言 -->
+      <div>
+        <label class="pp-label">{{ t('admin.settings_default_locale') }}</label>
+        <select v-model="localDefaultLocale" class="pp-input">
+          <option value="zh-TW">{{ t('admin.settings_default_locale_zhtw') }}</option>
+          <option value="en">{{ t('admin.settings_default_locale_en') }}</option>
+        </select>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-3 mt-6 border-t border-bp-border pt-4">
+        <button type="button" class="bp-btn-accent" @click="handleSave">
           {{ t('admin.appearance_save') }}
         </button>
-        <button
-          type="button"
-          class="bp-btn-primary"
-          @click="handleReset"
-        >
+        <button type="button" class="bp-btn-primary" @click="handleReset">
           {{ t('admin.settings_reset') }}
         </button>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.pp-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pp-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(16, 16, 16, 1);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pp-input:focus {
+  border-color: #990011;
+}
+</style>

@@ -21,7 +21,7 @@ metadata:
 
 | 項目 | 內容 |
 |------|------|
-| **名稱** | WWT — AI-Powered Creative Workshop |
+| **名稱** | What's that |
 | **定位** | 雙語（中/英）個人網站，分享 AI Coding、AI 影片製作技巧、專業影視製作經驗 |
 | **前端** | Vue 3 + TypeScript + Vite + Tailwind CSS v4 |
 | **UI 庫** | Element Plus + Headless UI |

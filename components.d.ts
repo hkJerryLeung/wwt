@@ -11,18 +11,25 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ArticleActions: typeof import('./src/components/common/ArticleActions.vue')['default']
     CategoryCards: typeof import('./src/components/home/CategoryCards.vue')['default']
+    CohesionHero: typeof import('./src/components/home/CohesionHero.vue')['default']
     CtaSection: typeof import('./src/components/home/CtaSection.vue')['default']
+    ExclusivePrograms: typeof import('./src/components/home/ExclusivePrograms.vue')['default']
     FeaturedPosts: typeof import('./src/components/home/FeaturedPosts.vue')['default']
     HeroSection: typeof import('./src/components/home/HeroSection.vue')['default']
     LanguageSwitch: typeof import('./src/components/common/LanguageSwitch.vue')['default']
+    LogoAnimation: typeof import('./src/components/common/LogoAnimation.vue')['default']
+    MotionWorks: typeof import('./src/components/home/MotionWorks.vue')['default']
     PostEditor: typeof import('./src/components/admin/PostEditor.vue')['default']
     ResizableImageView: typeof import('./src/components/editor/ResizableImageView.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SlashCommandMenu: typeof import('./src/components/editor/SlashCommandMenu.vue')['default']
+    StatsBar: typeof import('./src/components/home/StatsBar.vue')['default']
     TheFooter: typeof import('./src/components/layout/TheFooter.vue')['default']
     TheNavbar: typeof import('./src/components/layout/TheNavbar.vue')['default']
     TiptapEditor: typeof import('./src/components/editor/TiptapEditor.vue')['default']
+    TiptapRenderer: typeof import('./src/components/editor/TiptapRenderer.vue')['default']
   }
 }

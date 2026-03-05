@@ -13,7 +13,7 @@ import { supabase } from '@/plugins/supabase'
 import { marked } from 'marked'
 
 interface Props {
-  modelValue?: Record<string, unknown> | null
+  modelValue?: string | Record<string, unknown> | null
   placeholder?: string
 }
 
@@ -25,6 +25,23 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'update:modelValue': [value: Record<string, unknown>]
 }>()
+
+/** Convert a plain string to Tiptap JSON format */
+function stringToTiptapJson(text: string): Record<string, unknown> {
+  if (!text) return { type: 'doc', content: [{ type: 'paragraph' }] }
+  const paragraphs = text.split('\n').map(line => ({
+    type: 'paragraph',
+    content: line ? [{ type: 'text', text: line }] : undefined,
+  }))
+  return { type: 'doc', content: paragraphs }
+}
+
+/** Normalize modelValue to Tiptap JSON */
+function normalizeContent(val: string | Record<string, unknown> | null | undefined): Record<string, unknown> {
+  if (!val) return { type: 'doc', content: [{ type: 'paragraph' }] }
+  if (typeof val === 'string') return stringToTiptapJson(val)
+  return val
+}
 
 const lowlight = createLowlight(common)
 const editor = ref<Editor | null>(null)
@@ -88,7 +105,7 @@ function looksLikeMarkdown(text: string): boolean {
 /* ─── Editor setup ─── */
 onMounted(() => {
   editor.value = new Editor({
-    content: props.modelValue || { type: 'doc', content: [{ type: 'paragraph' }] },
+    content: normalizeContent(props.modelValue),
     extensions: [
       StarterKit.configure({
         codeBlock: false,
@@ -204,10 +221,11 @@ onMounted(() => {
 /* ─── Sync external model changes ─── */
 watch(() => props.modelValue, (val) => {
   if (!editor.value) return
+  const normalized = normalizeContent(val)
   const currentJSON = JSON.stringify(editor.value.getJSON())
-  const newJSON = JSON.stringify(val)
-  if (currentJSON !== newJSON && val) {
-    editor.value.commands.setContent(val)
+  const newJSON = JSON.stringify(normalized)
+  if (currentJSON !== newJSON) {
+    editor.value.commands.setContent(normalized)
   }
 })
 
@@ -525,6 +543,14 @@ onBeforeUnmount(() => {
 :deep(.notion-editor-content ol) {
   padding-left: 24px;
   margin: 4px 0;
+}
+
+:deep(.notion-editor-content ul) {
+  list-style-type: disc;
+}
+
+:deep(.notion-editor-content ol) {
+  list-style-type: decimal;
 }
 
 :deep(.notion-editor-content li) {

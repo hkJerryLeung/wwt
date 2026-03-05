@@ -5,6 +5,7 @@ import { usePostsStore } from '@/stores/posts'
 import { useFrontendNavStore } from '@/stores/frontendNav'
 import { useLocale } from '@/composables/useLocale'
 import { useAutoTranslate } from '@/composables/useAutoTranslate'
+import ArticleActions from '@/components/common/ArticleActions.vue'
 import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
@@ -35,6 +36,20 @@ onMounted(() => {
 })
 
 const post = computed(() => postsStore.currentPost)
+
+const imageOverrides: Record<string, string> = {
+  'obsidian-skills': '/images/post-obsidian-skills.png',
+  'jackie-zhang-portfolio': '/images/post-portfolio-design.png',
+  'sss': '/images/post-tofu-dishes.png',
+  'asdasdasda': '/images/post-premium-content.png',
+}
+
+const postFeaturedImage = computed(() => {
+  if (!post.value) return null
+  const slug = post.value.slug
+  if (slug && imageOverrides[slug]) return imageOverrides[slug]
+  return post.value.featured_image
+})
 
 // Auto-translate when English content is empty
 const isAutoTranslated = computed(() => {
@@ -104,7 +119,7 @@ function formatDate(dateStr: string | null): string {
         </router-link>
 
         <!-- Header -->
-        <header class="mb-10">
+        <header class="relative mb-10">
           <div class="mb-4 flex items-center gap-3">
             <span
               v-if="post.is_premium"
@@ -117,7 +132,13 @@ function formatDate(dateStr: string | null): string {
             </span>
           </div>
 
-          <h1 class="font-blueprint text-3xl leading-tight tracking-wide text-bp-white sm:text-4xl">
+          <!-- Article actions (top-right) -->
+          <ArticleActions
+            :title="localizedField(post.title_zh, post.title_en)"
+            class="absolute right-0 top-0"
+          />
+
+          <h1 class="pr-36 font-blueprint text-3xl leading-tight tracking-wide text-bp-white sm:text-4xl">
             {{ localizedField(post.title_zh, post.title_en) }}
           </h1>
 
@@ -134,11 +155,11 @@ function formatDate(dateStr: string | null): string {
 
         <!-- Featured image -->
         <div
-          v-if="post.featured_image"
+          v-if="postFeaturedImage"
           class="mb-10 aspect-video overflow-hidden border border-bp-border"
         >
           <img
-            :src="post.featured_image"
+            :src="postFeaturedImage"
             :alt="localizedField(post.title_zh, post.title_en)"
             class="h-full w-full object-cover"
           />

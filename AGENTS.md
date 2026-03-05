@@ -6,7 +6,8 @@
 |name:wwt-workshop|tech:TypeScript+Vue+Tailwind|framework:Vue@3.5.25|
 
 ## 規則索引 (Rule Index, .agent/)
-|skills:{api-design.skill.md,performance.skill.md,security.skill.md,tech-stack.skill.md,ui-design.skill.md,wwt-project-context.skill.md}|
+|skills:{api-design.skill.md,db-schema.skill.md,performance.skill.md,security.skill.md,tech-stack.skill.md,ui-design.skill.md,wwt-project-context.skill.md}|
+|workflows:{deploy.md,testing.md}|
 
 ## 開發指南 (Instructions)
 
@@ -16,4 +17,4 @@
 3. 請查看專案根目錄的 `user_rules.md` 以了解專案專屬的開發規範
 
 ---
-*由 Pixiu Agent 自動生成*
+*由 Pixiu Agent 自動生成 · 更新於 2026-03-02*

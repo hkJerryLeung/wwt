@@ -42,7 +42,7 @@ function getFilterLabel(key: string): string {
 
 <template>
   <div class="py-24 sm:py-32">
-    <div class="mx-auto max-w-[1080px] px-4 sm:px-6">
+    <div class="mx-auto max-w-[1800px] px-4 sm:px-6">
       <!-- Header（標題與簡介跟隨後台選單管理） -->
       <div class="mb-12">
         <h1 class="font-blueprint text-4xl tracking-wide text-bp-white sm:text-5xl">

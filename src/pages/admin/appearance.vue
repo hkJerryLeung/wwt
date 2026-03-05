@@ -63,7 +63,7 @@ const backgroundTypeOptions: { value: BackgroundType; labelKey: string }[] = [
 
 <template>
   <div>
-    <h1 class="mb-8 font-blueprint text-2xl tracking-wide text-bp-white">
+    <h1 class="mb-4 font-blueprint text-2xl tracking-wide text-bp-white">
       {{ t('admin.appearance') }}
     </h1>
 
@@ -71,67 +71,44 @@ const backgroundTypeOptions: { value: BackgroundType; labelKey: string }[] = [
       {{ t('admin.appearance_description') }}
     </p>
 
-    <div class="max-w-xl space-y-6">
+    <div class="space-y-3" style="max-width: 700px;">
       <!-- 強調色 -->
-      <div class="bp-card relative p-6">
-        <div class="bp-corner-marks absolute inset-0" />
-        <label class="mb-2 block text-sm font-medium text-bp-subtle">
-          {{ t('admin.appearance_accent') }}
-        </label>
+      <div>
+        <label class="pp-label">{{ t('admin.appearance_accent') }}</label>
         <div class="flex flex-wrap items-center gap-3">
           <input
             type="color"
-            class="h-10 w-16 cursor-pointer rounded border border-bp-border bg-bp-deep p-1"
+            class="h-10 w-16 cursor-pointer border border-[rgba(255,255,255,0.15)] bg-[rgba(16,16,16,1)] p-1"
             :value="localAccentColor || DEFAULT_ACCENT"
             @input="localAccentColor = ($event.target as HTMLInputElement).value"
           />
           <input
             v-model="localAccentColor"
             type="text"
-            class="w-28 rounded border border-bp-border bg-bp-primary px-3 py-2 font-mono text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            placeholder="#990011"
+            class="pp-input font-mono"
+            style="width: 7rem;"
           />
         </div>
       </div>
 
       <!-- Logo 網址 -->
-      <div class="bp-card relative p-6">
-        <div class="bp-corner-marks absolute inset-0" />
-        <label class="mb-2 block text-sm font-medium text-bp-subtle">
-          {{ t('admin.appearance_logo_url') }}
-        </label>
-        <input
-          v-model="localLogoUrl"
-          type="url"
-          class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-          :placeholder="t('admin.appearance_logo_placeholder')"
-        />
+      <div>
+        <label class="pp-label">{{ t('admin.appearance_logo_url') }}</label>
+        <input v-model="localLogoUrl" type="url" class="pp-input" />
       </div>
 
       <!-- 網站名稱 -->
-      <div class="bp-card relative p-6">
-        <div class="bp-corner-marks absolute inset-0" />
-        <label class="mb-2 block text-sm font-medium text-bp-subtle">
-          {{ t('admin.appearance_site_name') }}
-        </label>
-        <input
-          v-model="localSiteName"
-          type="text"
-          class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-          :placeholder="t('admin.appearance_site_name_placeholder')"
-        />
+      <div>
+        <label class="pp-label">{{ t('admin.appearance_site_name') }}</label>
+        <input v-model="localSiteName" type="text" class="pp-input" />
       </div>
 
-      <!-- 背景樣式：網格 / 純色 / 圖片 -->
-      <div class="bp-card relative p-6">
-        <div class="bp-corner-marks absolute inset-0" />
-        <label class="mb-2 block text-sm font-medium text-bp-subtle">
-          {{ t('admin.appearance_background') }}
-        </label>
-        <select
-          v-model="localBackgroundType"
-          class="mb-4 w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white focus:border-bp-accent focus:outline-none"
-        >
+      <!-- 背景樣式 -->
+      <h4 class="text-[10px] uppercase tracking-widest text-bp-muted mt-4 mb-2 border-t border-bp-border pt-3">{{ t('admin.appearance_background') }}</h4>
+
+      <div>
+        <label class="pp-label">{{ t('admin.appearance_background') }}</label>
+        <select v-model="localBackgroundType" class="pp-input">
           <option
             v-for="opt in backgroundTypeOptions"
             :key="opt.value"
@@ -140,16 +117,13 @@ const backgroundTypeOptions: { value: BackgroundType; labelKey: string }[] = [
             {{ t(opt.labelKey) }}
           </option>
         </select>
+      </div>
 
-        <!-- 網格：關閉 / 一般 / 密集 -->
-        <template v-if="localBackgroundType === 'grid'">
-          <label class="mb-2 mt-2 block text-xs text-bp-muted">
-            {{ t('admin.appearance_grid') }}
-          </label>
-          <select
-            v-model="localGridStyle"
-            class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white focus:border-bp-accent focus:outline-none"
-          >
+      <!-- 網格：關閉 / 一般 / 密集 -->
+      <template v-if="localBackgroundType === 'grid'">
+        <div>
+          <label class="pp-label">{{ t('admin.appearance_grid') }}</label>
+          <select v-model="localGridStyle" class="pp-input">
             <option
               v-for="opt in gridOptions"
               :key="opt.value"
@@ -158,60 +132,73 @@ const backgroundTypeOptions: { value: BackgroundType; labelKey: string }[] = [
               {{ t(opt.labelKey) }}
             </option>
           </select>
-        </template>
+        </div>
+      </template>
 
-        <!-- 純色：顏色選擇器 -->
-        <template v-else-if="localBackgroundType === 'solid'">
-          <label class="mb-2 mt-2 block text-xs text-bp-muted">
-            {{ t('admin.appearance_bg_color') }}
-          </label>
+      <!-- 純色：顏色選擇器 -->
+      <template v-else-if="localBackgroundType === 'solid'">
+        <div>
+          <label class="pp-label">{{ t('admin.appearance_bg_color') }}</label>
           <div class="flex flex-wrap items-center gap-3">
             <input
               type="color"
-              class="h-10 w-16 cursor-pointer rounded border border-bp-border bg-bp-deep p-1"
+              class="h-10 w-16 cursor-pointer border border-[rgba(255,255,255,0.15)] bg-[rgba(16,16,16,1)] p-1"
               :value="localBackgroundColor || DEFAULT_BG_COLOR"
               @input="localBackgroundColor = ($event.target as HTMLInputElement).value"
             />
             <input
               v-model="localBackgroundColor"
               type="text"
-              class="w-28 rounded border border-bp-border bg-bp-primary px-3 py-2 font-mono text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-              :placeholder="t('admin.appearance_bg_color_placeholder')"
+              class="pp-input font-mono"
+              style="width: 7rem;"
             />
           </div>
-        </template>
+        </div>
+      </template>
 
-        <!-- 圖片：URL -->
-        <template v-else-if="localBackgroundType === 'image'">
-          <label class="mb-2 mt-2 block text-xs text-bp-muted">
-            {{ t('admin.appearance_bg_image_url') }}
-          </label>
-          <input
-            v-model="localBackgroundImageUrl"
-            type="url"
-            class="w-full rounded border border-bp-border bg-bp-primary px-3 py-2 text-sm text-bp-white placeholder:text-bp-muted focus:border-bp-accent focus:outline-none"
-            :placeholder="t('admin.appearance_bg_image_placeholder')"
-          />
-        </template>
-      </div>
+      <!-- 圖片：URL -->
+      <template v-else-if="localBackgroundType === 'image'">
+        <div>
+          <label class="pp-label">{{ t('admin.appearance_bg_image_url') }}</label>
+          <input v-model="localBackgroundImageUrl" type="url" class="pp-input" />
+        </div>
+      </template>
 
-      <!-- 按鈕 -->
-      <div class="flex flex-wrap gap-3">
-        <button
-          type="button"
-          class="bp-btn-accent"
-          @click="handleSave"
-        >
+      <!-- Actions -->
+      <div class="flex flex-wrap gap-3 mt-6 border-t border-bp-border pt-4">
+        <button type="button" class="bp-btn-accent" @click="handleSave">
           {{ t('admin.appearance_save') }}
         </button>
-        <button
-          type="button"
-          class="bp-btn-primary"
-          @click="handleReset"
-        >
+        <button type="button" class="bp-btn-primary" @click="handleReset">
           {{ t('admin.appearance_reset') }}
         </button>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.pp-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pp-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(16, 16, 16, 1);
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.pp-input:focus {
+  border-color: #990011;
+}
+</style>

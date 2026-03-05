@@ -1,0 +1,79 @@
+[
+  {
+    "timestamp": 1772121304500,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 536,
+    "rawEstimatedTokens": 536,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  },
+  {
+    "timestamp": 1772121296264,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 529,
+    "rawEstimatedTokens": 529,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  },
+  {
+    "timestamp": 1772121295303,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 525,
+    "rawEstimatedTokens": 525,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  },
+  {
+    "timestamp": 1772121026708,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 526,
+    "rawEstimatedTokens": 526,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  },
+  {
+    "timestamp": 1772112387630,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 514,
+    "rawEstimatedTokens": 514,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  },
+  {
+    "timestamp": 1772033234003,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 521,
+    "rawEstimatedTokens": 521,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  },
+  {
+    "timestamp": 1772033233965,
+    "mode": "quick",
+    "budget": 2000,
+    "finalEstimatedTokens": 521,
+    "rawEstimatedTokens": 521,
+    "savedTokens": 0,
+    "savedPercent": 0,
+    "truncated": false,
+    "criticalTrim": false
+  }
+]
