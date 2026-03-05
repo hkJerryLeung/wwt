@@ -84,14 +84,17 @@ function toggleFaq(i: number) {
 /* Testimonials */
 const testimonialIndex = ref(0)
 const testimonialCount = computed(() => content.value.testimonials?.length ?? 0)
-function nextTestimonial() {
-  if (testimonialCount.value === 0) return
-  testimonialIndex.value = (testimonialIndex.value + 1) % testimonialCount.value
-}
-function prevTestimonial() {
-  if (testimonialCount.value === 0) return
-  testimonialIndex.value = (testimonialIndex.value - 1 + testimonialCount.value) % testimonialCount.value
-}
+// TODO: uncomment when testimonial carousel navigation is wired up
+// function nextTestimonial() {
+//   if (testimonialCount.value === 0) return
+//   testimonialIndex.value = (testimonialIndex.value + 1) % testimonialCount.value
+// }
+// function prevTestimonial() {
+//   if (testimonialCount.value === 0) return
+//   testimonialIndex.value = (testimonialIndex.value - 1 + testimonialCount.value) % testimonialCount.value
+// }
+void testimonialIndex
+void testimonialCount
 
 /* Defaults */
 const defaultFeatures = [
@@ -346,14 +349,19 @@ const pricingBgUrl = computed(() => {
 /* FAQ category grouping */
 const faqCategories = computed(() => {
   const items = faqToShow.value
-  const cats: Record<string, typeof items> = {}
+  const cats: Record<string, any[]> = {}
   for (const item of items) {
-    const cat = item.category ?? 'General'
+    const cat = (item as any).category ?? 'General'
     if (!cats[cat]) cats[cat] = []
-    cats[cat].push(item)
+    cats[cat]!.push(item)
   }
   return cats
 })
+
+/** Get the index of a FAQ item in the flat faqToShow array */
+function getFaqIndex(item: any): number {
+  return faqToShow.value.findIndex(f => f === item)
+}
 </script>
 
 <template>
@@ -664,12 +672,12 @@ const faqCategories = computed(() => {
               <button
                 type="button"
                 class="ol-faq-question"
-                @click="toggleFaq(faqToShow.indexOf(item))"
+                @click="toggleFaq(getFaqIndex(item))"
               >
                 <span>{{ item.question }}</span>
-                <span class="ol-faq-arrow">{{ openedFaqIndex === faqToShow.indexOf(item) ? '↑' : '↓' }}</span>
+                <span class="ol-faq-arrow">{{ openedFaqIndex === getFaqIndex(item) ? '↑' : '↓' }}</span>
               </button>
-              <div v-show="openedFaqIndex === faqToShow.indexOf(item)">
+              <div v-show="openedFaqIndex === getFaqIndex(item)">
                 <TiptapRenderer :content="item.answer" tag="div" class="ol-faq-answer" />
               </div>
             </div>

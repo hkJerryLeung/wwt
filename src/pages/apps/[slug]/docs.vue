@@ -71,7 +71,7 @@ function onScroll() {
       return
     }
   }
-  if (ids.length) activeStepId.value = ids[0]
+  if (ids.length) activeStepId.value = ids[0] ?? ''
 }
 
 function scrollToStep(id: string) {

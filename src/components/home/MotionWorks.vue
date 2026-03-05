@@ -55,7 +55,7 @@ function generateLines(): ParallaxLine[] {
       width: 2 + Math.random() * 3,   // 2px–5px (roughly 3x the old 1px)
       opacity: 0.10 + Math.random() * 0.55,  // up to ~0.65
       zLayer,
-      speed: LAYER_SPEEDS[zLayer],
+      speed: LAYER_SPEEDS[zLayer] ?? 0.15,
       animDelay: Math.random() * -10,
       animDuration: 3 + Math.random() * 4,
       bobAmount: 20 + Math.random() * 40,
@@ -128,41 +128,41 @@ onBeforeUnmount(() => {
 
       <!-- Card 1: top-left -->
       <div class="mw__card mw__card--tl">
-        <div class="mw__card-img"><img :src="demoWorks[0].image" :alt="demoWorks[0].title" loading="lazy" /></div>
+        <div class="mw__card-img"><img :src="demoWorks[0]!.image" :alt="demoWorks[0]!.title" loading="lazy" /></div>
         <div class="mw__card-body">
-          <h3>{{ demoWorks[0].title }}</h3>
-          <p>{{ demoWorks[0].desc }}</p>
-          <a :href="demoWorks[0].link" class="mw__card-link">查看作品 <span>→</span></a>
+          <h3>{{ demoWorks[0]!.title }}</h3>
+          <p>{{ demoWorks[0]!.desc }}</p>
+          <a :href="demoWorks[0]!.link" class="mw__card-link">查看作品 <span>→</span></a>
         </div>
       </div>
 
       <!-- Card 2: top-right -->
       <div class="mw__card mw__card--tr">
-        <div class="mw__card-img"><img :src="demoWorks[1].image" :alt="demoWorks[1].title" loading="lazy" /></div>
+        <div class="mw__card-img"><img :src="demoWorks[1]!.image" :alt="demoWorks[1]!.title" loading="lazy" /></div>
         <div class="mw__card-body">
-          <h3>{{ demoWorks[1].title }}</h3>
-          <p>{{ demoWorks[1].desc }}</p>
-          <a :href="demoWorks[1].link" class="mw__card-link">查看作品 <span>→</span></a>
+          <h3>{{ demoWorks[1]!.title }}</h3>
+          <p>{{ demoWorks[1]!.desc }}</p>
+          <a :href="demoWorks[1]!.link" class="mw__card-link">查看作品 <span>→</span></a>
         </div>
       </div>
 
       <!-- Card 3: bottom-left -->
       <div class="mw__card mw__card--bl">
-        <div class="mw__card-img"><img :src="demoWorks[2].image" :alt="demoWorks[2].title" loading="lazy" /></div>
+        <div class="mw__card-img"><img :src="demoWorks[2]!.image" :alt="demoWorks[2]!.title" loading="lazy" /></div>
         <div class="mw__card-body">
-          <h3>{{ demoWorks[2].title }}</h3>
-          <p>{{ demoWorks[2].desc }}</p>
-          <a :href="demoWorks[2].link" class="mw__card-link">查看作品 <span>→</span></a>
+          <h3>{{ demoWorks[2]!.title }}</h3>
+          <p>{{ demoWorks[2]!.desc }}</p>
+          <a :href="demoWorks[2]!.link" class="mw__card-link">查看作品 <span>→</span></a>
         </div>
       </div>
 
       <!-- Card 4: bottom-right -->
       <div class="mw__card mw__card--br">
-        <div class="mw__card-img"><img :src="demoWorks[3].image" :alt="demoWorks[3].title" loading="lazy" /></div>
+        <div class="mw__card-img"><img :src="demoWorks[3]!.image" :alt="demoWorks[3]!.title" loading="lazy" /></div>
         <div class="mw__card-body">
-          <h3>{{ demoWorks[3].title }}</h3>
-          <p>{{ demoWorks[3].desc }}</p>
-          <a :href="demoWorks[3].link" class="mw__card-link">查看作品 <span>→</span></a>
+          <h3>{{ demoWorks[3]!.title }}</h3>
+          <p>{{ demoWorks[3]!.desc }}</p>
+          <a :href="demoWorks[3]!.link" class="mw__card-link">查看作品 <span>→</span></a>
         </div>
       </div>
     </div>

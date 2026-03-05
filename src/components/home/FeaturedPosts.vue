@@ -30,7 +30,7 @@ const imageOverrides: Record<string, string> = {
 }
 
 function postImage(post: any, idx: number): string {
-  if (post.slug && imageOverrides[post.slug]) return imageOverrides[post.slug]
+  if (post.slug && imageOverrides[post.slug]) return imageOverrides[post.slug]!
   return post.featured_image || fallbackImages[idx % fallbackImages.length]
 }
 

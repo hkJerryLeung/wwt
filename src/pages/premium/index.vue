@@ -169,7 +169,7 @@ const faqCategories = computed(() => {
   const cats: Record<string, PremiumFaqItem[]> = {}
   for (const item of premiumFaqItems) {
     if (!cats[item.category]) cats[item.category] = []
-    cats[item.category].push(item)
+    cats[item.category]!.push(item)
   }
   return cats
 })
